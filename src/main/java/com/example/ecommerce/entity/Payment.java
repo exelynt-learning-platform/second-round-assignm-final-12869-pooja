@@ -54,7 +54,7 @@ public class Payment
 	{
 		return paymentDate;
 	}
-	public void setPaymentDate(Date paymentDate)
+	public void setPaymentDate(Date payment)
 	{
 		this.paymentDate = paymentDate;
 	}

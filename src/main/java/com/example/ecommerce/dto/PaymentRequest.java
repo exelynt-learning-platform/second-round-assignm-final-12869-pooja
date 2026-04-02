@@ -9,7 +9,7 @@ public class PaymentRequest
 	@NotBlank
 	private String method;
 	
-	public PaymentRequest(Long orderId,String method)
+	public PaymentRequest()
 	{
 		this.orderId = orderId;
 		this.method = method;

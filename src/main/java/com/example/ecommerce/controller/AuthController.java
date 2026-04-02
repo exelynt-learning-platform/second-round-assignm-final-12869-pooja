@@ -1,18 +1,15 @@
 package com.example.ecommerce.controller;
 import com.example.ecommerce.dto.LoginRequest;
-
 import com.example.ecommerce.dto.RegisterRequest;
 import com.example.ecommerce.entity.User;
 import com.example.ecommerce.security.JwtTokenProvider;
 import com.example.ecommerce.service.UserService;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,8 +38,11 @@ public class AuthController
 		user.setPassword(request.getPassword());
 		
 		User savedUser = userService.registerUser(user);
+		List<SimpleGrantedAuthority> authorities = savedUser.getRoles().stream()
+				.map(role -> new SimpleGrantedAuthority(role))
+				.collect(Collectors.toList());
+				
 		
-		List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 		String token = jwtTokenProvider.generateToken(savedUser.getUsername(), authorities);
 		return ResponseEntity.ok("Bearer " + token);
 	}

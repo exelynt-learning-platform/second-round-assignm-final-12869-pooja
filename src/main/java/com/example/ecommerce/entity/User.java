@@ -8,7 +8,7 @@ import java.util.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "user")
 public class User 
 {
 		@Id
@@ -24,15 +24,16 @@ public class User
 		private String email;
 		
 		@ElementCollection(fetch = FetchType.EAGER)
+		@Enumerated(EnumType.STRING)
 		@CollectionTable(name = "user_role",joinColumns =@JoinColumn(name = "user_id"))
-		@Column(name = "role")
+		@Column(name = "roles")
 		private Set<String> roles = new HashSet<>();
 		
 		public Long getId()
 		{
 			return id;
 		}
-		public void setId(Long id)
+		public void sestId(Long id)
 		{
 			this.id = id;
 		}
