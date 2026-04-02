@@ -20,7 +20,7 @@ public class PaymentService
 	
 	private final RestTemplate restTemplate;
 
-	@Value("${stripe.secret.key}")
+	@Value("${stripe.secret")
 	private String stripeSecretKey;
 	
 	public PaymentService(PaymentRepository paymentRepository, 

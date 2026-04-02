@@ -18,10 +18,10 @@ import com.example.ecommerce.entity.Role;
 
 public class JwtTokenProvider 
 {
-	@Value("${security.jwt.secret}")
+	@Value("${security.secret}")
 	private  String secret;
 	
-	@Value("{security.jwt.expiration:8600000}")
+	@Value("{security.jwt.expiration:86400000}")
 	private long expiration;
 	private Key key;
 	
