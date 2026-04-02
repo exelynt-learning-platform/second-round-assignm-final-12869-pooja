@@ -26,28 +26,28 @@
 
 ## API Endpoints
 * Auth
-POST /auth/register
-POST /auth/login
+-POST /auth/register
+-POST /auth/login
 * Products
-GET /products
-GET /products/{id}
-POST /products
-PUT /products/{id}
-Cart
-GET /cart
-POST /cart/add
-PUT /cart/update
-DELETE /cart/remove
+-GET /products
+-GET /products/{id}
+-POST /products
+-PUT /products/{id}
+-Cart
+-GET /cart
+-POST /cart/add
+-PUT /cart/update
+-DELETE /cart/remove
 * Orders
-POST /orders
-GET /orders
-GET /orders/{id}
+-POST /orders
+-GET /orders
+-GET /orders/{id}
 *Payment
-POST /payment/checkout
+-POST /payment/checkout
 
 ## Testing
-Unit tests for:
-Authentication
-Cart Service
-Order Processing
-Payment Integration
+*Unit tests for:
+-Authentication
+-Cart Service
+-Order Processing
+-Payment Integration
