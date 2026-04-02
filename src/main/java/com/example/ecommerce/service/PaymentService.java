@@ -44,7 +44,7 @@ public class PaymentService
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.setBasicAuth(stripeSecretKey, "");
+		headers.setBearerAuth(stripeSecretKey);
 		
 		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(body, headers);
 		String stripeUrl ="https://api.stripe.com/v1/payment_intents";

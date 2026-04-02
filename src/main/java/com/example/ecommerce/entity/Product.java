@@ -2,7 +2,7 @@ package com.example.ecommerce.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 public class Product 
 {
 

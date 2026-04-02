@@ -8,7 +8,7 @@ import java.util.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "users")
 public class User 
 {
 		@Id
@@ -32,7 +32,7 @@ public class User
 		{
 			return id;
 		}
-		public void sestId(Long id)
+		public void setId(Long id)
 		{
 			this.id = id;
 		}
