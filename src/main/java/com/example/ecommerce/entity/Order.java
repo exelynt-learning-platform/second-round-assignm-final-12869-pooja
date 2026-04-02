@@ -1,5 +1,6 @@
 package com.example.ecommerce.entity;
 import jakarta.persistence.*;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.*;
 @Entity

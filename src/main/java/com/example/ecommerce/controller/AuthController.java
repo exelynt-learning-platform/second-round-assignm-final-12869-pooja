@@ -30,7 +30,7 @@ public class AuthController
 		this.authenticationManager = authenticationManager;
 	}
 	@PostMapping("/register")
-	public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request)
+	public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request)
 	{
 		User user = new User();
 		user.setUsername(request.getUsername());
@@ -47,14 +47,14 @@ public class AuthController
 		return ResponseEntity.ok("Bearer " + token);
 	}
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request)
+	public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request)
 	{
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.getUsername(),request.getPassword()));
 		
 		String token = jwtTokenProvider.generateToken(request.getUsername(),authentication.getAuthorities());
 		
-		return ResponseEntity.ok("Bearer " +token);
+		return ResponseEntity.ok("Bearer " + token);
 		
 				
 	}

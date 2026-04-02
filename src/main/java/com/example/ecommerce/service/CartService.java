@@ -1,5 +1,6 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
+
 import com.example.ecommerce.repository.*;
 import org.springframework.stereotype.Service;
 
@@ -43,11 +44,21 @@ public class CartService
 		Cart cart = getOrCreateCart(username);
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new RuntimeException("Product not found"));
+		
+		if(product.getStockQuantity()<quantity)
+		{
+			throw new RuntimeException("Insufficient stock available");
+		}
 		for(CartItem item : cart.getItems())
 		{
 			if(item.getProduct().getId().equals(productId))
 			{
-				item.setQuantity(item.getQuantity() + quantity);
+				int newQuantity=item.getQuantity() + quantity;
+				
+				if(product.getStockQuantity()<newQuantity)
+				{
+					throw new RuntimeException("Insufficient stock available");
+				}
 				return cartRepository.save(cart);
 			}
 		}

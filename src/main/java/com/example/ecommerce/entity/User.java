@@ -1,7 +1,7 @@
 package com.example.ecommerce.entity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 import java.util.*;
 
@@ -64,11 +64,11 @@ public class User
 		}
 		public Set<String> getRoles()
 		{
-			return roles;
+			return (roles !=null) ? roles : new  HashSet<>();
 		}
 		public void setRoles(Set<String> roles)
 		{
-			this.roles=roles;
+			this.roles=(roles != null) ?  roles : new HashSet<>();
 		}
 }
 

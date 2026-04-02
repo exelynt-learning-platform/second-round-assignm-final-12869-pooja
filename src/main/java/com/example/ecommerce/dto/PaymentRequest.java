@@ -1,5 +1,6 @@
 package com.example.ecommerce.dto;
 import jakarta.validation.constraints.NotNull;
+
 import jakarta.validation.constraints.NotBlank;
 public class PaymentRequest 
 {	
@@ -8,8 +9,11 @@ public class PaymentRequest
 	
 	@NotBlank
 	private String method;
-	
 	public PaymentRequest()
+	{
+		
+	}
+	public PaymentRequest(Long orderId, String method)
 	{
 		this.orderId = orderId;
 		this.method = method;

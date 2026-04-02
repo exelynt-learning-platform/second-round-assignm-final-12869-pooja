@@ -19,7 +19,7 @@ public class CartItemDTO
 	{
 		return productName;
 	}
-	public void setProductName(String ProductName)
+	public void setProductName(String productName)
 	{
 		this.productName=productName;
 	}

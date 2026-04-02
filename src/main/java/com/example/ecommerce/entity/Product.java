@@ -1,18 +1,30 @@
 package com.example.ecommerce.entity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 public class Product 
 {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotBlank
+	@Size(min = 2, max=100)
 	private String name;
+	
 	private String description;
-	private double price;
-	private int stockQuantity;
+	
+	@NotNull
+	@DecimalMin(value = "1.0", inclusive=true)
+	private Double price;
+	
+	@NotNull
+	@Min(0)
+	private Integer stockQuantity;
+	
 	private String imageUrl;
 	
 	public Long getId()
@@ -40,21 +52,21 @@ public class Product
 	{
 		this.description =description;
 	}
-	public double getPrice()
+	public Double getPrice()
 	{
 		return price;
 		
 	}
-	public void setPrice(double price)
+	public void setPrice(Double price)
 	{
 		this.price=price;
 	}
-	public int getStockQuantity()
+	public Integer getStockQuantity()
 	{
 		return stockQuantity;
 		
 	}
-	public void setStockQuantity(int stockQuantity)
+	public void setStockQuantity(Integer stockQuantity)
 	{
 		this.stockQuantity=stockQuantity;
 	}

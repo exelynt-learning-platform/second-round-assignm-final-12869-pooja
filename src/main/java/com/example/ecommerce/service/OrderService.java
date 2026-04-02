@@ -1,7 +1,10 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
+
 import com.example.ecommerce.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 @Service
 public class OrderService
@@ -18,6 +21,7 @@ public class OrderService
 		this.cartRepository=cartRepository;
 		this.userRepository=userRepository;
 	}
+	@Transactional
 	public Order placeOrder(String username)
 	{
 		User user = userRepository.findByUsername(username)
@@ -39,6 +43,14 @@ public class OrderService
 		
 		for(CartItem cartItem : cart.getItems())
 		{
+			
+			Product product=cartItem.getProduct();
+			if(product.getStockQuantity()<cartItem.getQuantity())
+			{
+				throw new RuntimeException("Insufficient stock for product: " +product.getName());
+			}
+			product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
+			
 			OrderItem orderItem = new OrderItem();
 			orderItem.setOrder(order);
 			orderItem.setProduct(cartItem.getProduct());
