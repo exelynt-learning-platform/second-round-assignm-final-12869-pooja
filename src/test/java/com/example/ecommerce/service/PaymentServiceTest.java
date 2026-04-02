@@ -1,5 +1,6 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
+
 import com.example.ecommerce.repository.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class PaymentServiceTest 
 {
 	@Mock

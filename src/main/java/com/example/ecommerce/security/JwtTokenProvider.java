@@ -19,7 +19,7 @@ import com.example.ecommerce.entity.Role;
 public class JwtTokenProvider 
 {
 	@Value("${security.jwt.secret}")
-	private  String secret;
+	private  String jwtsecret;
 	
 	@Value("${security.jwt.expiration:86400000}")
 	private long expiration;
@@ -28,7 +28,7 @@ public class JwtTokenProvider
 	@PostConstruct
 	public void init()
 	{
-		key=Keys.hmacShaKeyFor(secret.getBytes());
+		key=Keys.hmacShaKeyFor(jwtsecret.getBytes());
 	}
 	
     public String generateToken(String username, Collection<? extends GrantedAuthority> roles)

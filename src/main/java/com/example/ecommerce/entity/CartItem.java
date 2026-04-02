@@ -15,9 +15,8 @@ public class CartItem
 	private int quantity;
 	
 	@ManyToOne
-	@JoinColumn(name = "card_id")
+	@JoinColumn(name = "cart_id")
 	@JsonBackReference
-	@JsonIgnore
 	private Cart cart;
 	public CartItem()
 	{}

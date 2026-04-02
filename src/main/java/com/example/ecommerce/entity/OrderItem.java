@@ -13,7 +13,6 @@ public class OrderItem
 	@ManyToOne
 	@JoinColumn(name = "order_id")
 	@JsonBackReference
-	@JsonIgnore
 	private Order order;
 	
 	@ManyToOne

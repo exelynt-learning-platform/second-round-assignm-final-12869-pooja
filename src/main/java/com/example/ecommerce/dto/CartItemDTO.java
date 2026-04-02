@@ -11,7 +11,7 @@ public class CartItemDTO
 	{
 		return productId;
 	}
-	public void setProductID(Long productId)
+	public void setProductId(Long productId)
 	{
 		this.productId=productId;
 	}
