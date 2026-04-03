@@ -88,23 +88,22 @@ public class PaymentService
 			payment.setTransactionId(paymentIntentId);
 			
 			
-			if(REQUIRES_PAYMENT_METHOD.equals(status) || REQUIRES_CONFIRMATION.equals(status) || REQUIRES_ACTION.equals(status))
-			{
-				payment.setStatus(PaymentStatus.PENDING);
-			}
-			else if(SUCCEEDED.equals(status)) 
-			{
-				payment.setStatus(PaymentStatus.SUCCESS);
-		        order.setStatus(OrderStatus.PAID);
-		        orderRepository.save(order);
-
-		    }
-			else
-			{
-				payment.setStatus(PaymentStatus.FAILED);
-			}
-
+			PaymentStatus paymentStatus=mapStripeStatusToPaymentStatus(status);
+			payment.setStatus(paymentStatus);
 			
+			if(paymentStatus == PaymentStatus.SUCCESS)
+			{
+				order.setStatus(OrderStatus.PAID);
+				orderRepository.save(order);
+			}
 			return paymentRepository.save(payment);
+	}
+	private PaymentStatus mapStripeStatusToPaymentStatus(String stripeStatus)
+	{
+		return switch(stripeStatus) {
+        case REQUIRES_PAYMENT_METHOD, REQUIRES_CONFIRMATION, REQUIRES_ACTION -> PaymentStatus.PENDING;
+		case SUCCEEDED -> PaymentStatus.SUCCESS;
+		default -> PaymentStatus.FAILED;
+		};
 	}
 }

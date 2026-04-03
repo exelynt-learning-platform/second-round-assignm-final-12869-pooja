@@ -1,14 +1,11 @@
 package com.example.ecommerce.entity;
 import jakarta.persistence.*;
 
-import lombok.*;
 
 import java.util.*;
 
 @Entity
 @Table(name = "users")
-@AllArgsConstructor
-@NoArgsConstructor
 
 
 public class User 
@@ -30,6 +27,23 @@ public class User
 		@CollectionTable(name = "user_role",joinColumns =@JoinColumn(name = "user_id"))
 		@Column(name = "roles")
 		private Set<String> roles = new HashSet<>();
+		
+		public User()
+		{
+			
+		}
+		public User(Long id,String username, String password,String email, Set<String> roles)
+		{
+			this.id=id;
+			this.username=username;
+			this.password=password;
+			this.email=email;
+			this.roles =(roles != null) ? roles : new HashSet<>();
+			
+		}
+		
+		
+		
 		
 		public Long getId()
 		{
