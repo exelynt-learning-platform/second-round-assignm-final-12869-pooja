@@ -26,7 +26,10 @@ public class CartService
 	}
 	public Cart getCart(String username)
 	{
-		return getOrCreateCart(username);
+		User user=userRepository.findByUsername(username)
+				.orElseThrow(()-> new RuntimeException("User not found"));
+		return cartRepository.findByUser(user)
+				.orElseThrow(() -> new ResourceNotFoundException("Cart not found for user"));
 	}
 	
 	public Cart getOrCreateCart(String username)
@@ -50,7 +53,7 @@ public class CartService
 		}
 	public Cart addToCart(String username, Long productId, int quantity)
 	{
-		Cart cart = getCart(username);
+		Cart cart = getOrCreateCart(username);
 		if(quantity <=0)
 		{
 			throw new RuntimeException("Quantity must be greater than 0");

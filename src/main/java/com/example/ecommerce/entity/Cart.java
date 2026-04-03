@@ -15,10 +15,11 @@ public class Cart
 	
 	@OneToMany(mappedBy ="cart", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	private List<CartItem> items = new ArrayList<>();
-	
+	private List<CartItem> items;
 	public Cart()
-	{}
+	{
+		this.items=new ArrayList<>();
+	}
 	public Long getId()
 	{
 		return id;
@@ -33,10 +34,7 @@ public class Cart
 	}
 	public List<CartItem> getItems()
 	{
-		if(items == null)
-		{
-			items = new ArrayList<>();
-		}
+		
 		return items;
 	}
 	public void setItems(List<CartItem>items)

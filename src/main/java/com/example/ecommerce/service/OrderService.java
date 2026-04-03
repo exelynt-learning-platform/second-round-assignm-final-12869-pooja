@@ -28,7 +28,7 @@ public class OrderService
 		this.productRepository=productRepository;
 	}
 	@Transactional
-	public Order placeOrder(String username, @Valid OrderRequest orderRequest)
+	public Order placeOrderFromCart(String username,OrderRequest orderRequest)
 	{
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new RuntimeException("User not found"));

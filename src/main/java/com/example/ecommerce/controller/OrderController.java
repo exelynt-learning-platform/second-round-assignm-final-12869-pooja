@@ -22,7 +22,7 @@ public class OrderController
 	public Order placeOrder(@Valid @RequestBody OrderRequest orderRequest,Authentication authentication)
 	{
 		String username = authentication.getName();
-		return orderService.placeOrder(username,orderRequest);
+		return orderService.placeOrderFromCart(username,orderRequest);
 	}
 	@GetMapping
 	public List<Order> getUserOrders(Authentication authentication)
