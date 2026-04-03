@@ -32,7 +32,7 @@ public class OrderService
 		
 		Cart cart = cartRepository.findByUser(user)
 				.orElseThrow(()-> new RuntimeException("cart not found"));
-		if(cart.getItems().isEmpty())
+		if(cart.getItems() == null || cart.getItems().isEmpty())
 		{
 			throw new RuntimeException("cart is empty");
 		}

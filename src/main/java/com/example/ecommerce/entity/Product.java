@@ -25,7 +25,7 @@ public class Product
 	
 	@NotNull
 	@Min(0)
-	private Integer stockQuantity;
+	private int stockQuantity;
 	
 	private String imageUrl;
 	
@@ -63,12 +63,12 @@ public class Product
 	{
 		this.price=price;
 	}
-	public Integer getStockQuantity()
+	public int getStockQuantity()
 	{
 		return stockQuantity;
 		
 	}
-	public void setStockQuantity(Integer stockQuantity)
+	public void setStockQuantity(int stockQuantity)
 	{
 		this.stockQuantity=stockQuantity;
 	}
