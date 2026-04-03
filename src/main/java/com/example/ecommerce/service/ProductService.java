@@ -1,5 +1,6 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.Product;
+import com.example.ecommerce.exception.ProductNotFoundException;
 import com.example.ecommerce.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ProductService
 	public Product getProductbyId(Long id)
 	{
 		return productRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("product not found"));
+				.orElseThrow(() -> new ProductNotFoundException("product not found with id: " + id));
 	}
 	public Product updateProduct(Long id,Product updateProduct)
 	{
@@ -39,6 +40,10 @@ public class ProductService
 	}
 	public void deleteProduct(Long id)
 	{
+		if(!productRepository.existsById(id))
+		{
+			throw new ProductNotFoundException("Product not found with id: " + id);
+		}
 		productRepository.deleteById(id);
 	}
 }

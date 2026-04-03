@@ -1,7 +1,11 @@
 package com.example.ecommerce.service;
+import com.example.ecommerce.dto.OrderRequest;
 import com.example.ecommerce.entity.*;
 
 import com.example.ecommerce.repository.*;
+
+import jakarta.validation.Valid;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,17 +16,19 @@ public class OrderService
 	private final OrderRepository orderRepository;
 	private final CartRepository cartRepository;
 	private final UserRepository userRepository;
+	private final ProductRepository productRepository;
 	
 	public OrderService(OrderRepository orderRepository,
 			CartRepository cartRepository,
-			UserRepository userRepository)
+			UserRepository userRepository,ProductRepository productRepository)
 	{
 		this.orderRepository=orderRepository;
 		this.cartRepository=cartRepository;
 		this.userRepository=userRepository;
+		this.productRepository=productRepository;
 	}
 	@Transactional
-	public Order placeOrder(String username)
+	public Order placeOrder(String username, @Valid OrderRequest orderRequest)
 	{
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new RuntimeException("User not found"));
@@ -44,19 +50,20 @@ public class OrderService
 		for(CartItem cartItem : cart.getItems())
 		{
 			
-			Product product=cartItem.getProduct();
+			Product product=productRepository.findById(cartItem.getProduct().getId())
+					.orElseThrow(() -> new RuntimeException("Product not found"));
 			if(product.getStockQuantity()<cartItem.getQuantity())
 			{
 				throw new RuntimeException("Insufficient stock for product: " +product.getName());
 			}
 			product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
-			
+	
 			OrderItem orderItem = new OrderItem();
 			orderItem.setOrder(order);
-			orderItem.setProduct(cartItem.getProduct());
+			orderItem.setProduct(product);
 			orderItem.setQuantity(cartItem.getQuantity());
 			
-			double price = cartItem.getProduct().getPrice();
+			double price = product.getPrice();
 			orderItem.setPrice(price);
 			
 			total += price * cartItem.getQuantity();

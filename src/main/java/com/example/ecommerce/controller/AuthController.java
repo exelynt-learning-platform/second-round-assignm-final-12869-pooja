@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController 
 {
+	private static final String BEARER_PREFIX = "Bearer ";
+	
 	private final UserService userService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final AuthenticationManager authenticationManager;
+	
 	
 	public AuthController(UserService userService, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager)
 	{
@@ -44,7 +47,7 @@ public class AuthController
 				
 		
 		String token = jwtTokenProvider.generateToken(savedUser.getUsername(), authorities);
-		return ResponseEntity.ok("Bearer " + token);
+		return ResponseEntity.ok(BEARER_PREFIX+ token);
 	}
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request)
@@ -54,7 +57,7 @@ public class AuthController
 		
 		String token = jwtTokenProvider.generateToken(request.getUsername(),authentication.getAuthorities());
 		
-		return ResponseEntity.ok("Bearer " + token);
+		return ResponseEntity.ok(BEARER_PREFIX + token);
 		
 				
 	}

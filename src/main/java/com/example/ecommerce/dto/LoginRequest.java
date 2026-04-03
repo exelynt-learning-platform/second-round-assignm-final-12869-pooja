@@ -1,5 +1,5 @@
 package com.example.ecommerce.dto;
-import jakarta.persistence.*;
+
 public class LoginRequest 
 {
 	private String username;

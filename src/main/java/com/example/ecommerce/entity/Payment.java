@@ -1,5 +1,7 @@
 package com.example.ecommerce.entity;
 import jakarta.persistence.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.util.*;
 @Entity
 public class Payment 
@@ -10,7 +12,9 @@ public class Payment
 	
 	private String method;
 	private double amount;
-	private String status;
+	
+	@Enumerated(EnumType.STRING)
+	private PaymentStatus status;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date paymentDate;
@@ -18,6 +22,9 @@ public class Payment
 	@OneToOne
 	@JoinColumn(name = "order_id")
 	private Order order;
+	
+	@Column(name ="transacton_id")
+	private String transactionId;
 	
 	public Long getId()
 	{
@@ -39,14 +46,14 @@ public class Payment
 	{
 		this.amount=amount;
 	}
-	public String getStatus()
+	public PaymentStatus getStatus()
 	{
 		return status;
 		
 		
 		
 	}
-	public void setStatus(String status)
+	public void setStatus(PaymentStatus status)
 	{
 		this.status=status;
 	}
@@ -66,5 +73,13 @@ public class Payment
 	{
 		this.order=order;
 	}
-	
+	public String getTransactionId()
+	{
+		return transactionId;
+		
+	}
+	public void setTransactionId(String transactionId)
+	{
+		this.transactionId=transactionId;
+	}
 }

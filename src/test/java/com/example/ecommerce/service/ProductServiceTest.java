@@ -29,7 +29,7 @@ public class ProductServiceTest
 	{
 		Product product = new Product();
 		product.setName("Laptop");
-		product.setPrice(10000);
+		product.setPrice(1000.0);
 		when(productRepository.save(any(Product.class))).thenReturn(product);
 		Product saved = productService.createProduct(product);
 		assertEquals("Laptop" , saved.getName());

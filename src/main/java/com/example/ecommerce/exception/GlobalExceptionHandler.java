@@ -1,9 +1,13 @@
 package com.example.ecommerce.exception;
 import org.springframework.http.*;
+
+import java.time.LocalDateTime;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler
@@ -36,4 +40,15 @@ public class GlobalExceptionHandler
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body("Something went wrong. Please try again later");
 	}
-}
+	@ExceptionHandler(ProductNotFoundException.class)
+	
+		public ResponseEntity<Map<String,Object>> handleProductNotFound(ProductNotFoundException ex)
+		{
+			Map<String, Object> error = new HashMap<>();
+			error.put("timestamp", LocalDateTime.now());
+			error.put("message", ex.getMessage());
+			error.put("status", HttpStatus.NOT_FOUND.value());
+			return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+		}
+	}
+

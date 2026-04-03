@@ -1,9 +1,14 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
+
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.http.HttpEntity;
 import com.example.ecommerce.repository.*;
+import com.example.ecommerce.entity.PaymentStatus;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,8 +25,13 @@ public class PaymentService
 	
 	private final RestTemplate restTemplate;
 
-	@Value("${stripe.secret}")
+	@Value("${stripe.secret.key}")
 	private String stripeSecretKey;
+	
+	private static final String  REQUIRES_PAYMENT_METHOD = "requires_payment_method";
+	private static final String REQUIRES_CONFIRMATION = "requires_confirmation";
+	private static final String REQUIRES_ACTION = "requires_action";
+	private static final String SUCCEEDED = "succeeded";
 	
 	public PaymentService(PaymentRepository paymentRepository, 
 			OrderRepository orderRepository,RestTemplate restTemplate)
@@ -30,40 +40,69 @@ public class PaymentService
 		this.orderRepository = orderRepository;
 		this.restTemplate = restTemplate;
 	}
+	@Transactional
 	public Payment makePayment(Long orderId,String method)
 	{
 		Order order = orderRepository.findById(orderId)
 				.orElseThrow(() -> new RuntimeException("Order not found"));
 		
-		//Map<String,Object> body =new HashMap<>();
 		MultiValueMap<String,String> body = new LinkedMultiValueMap<>();
-		body.add("amount", String.valueOf((int)(order.getTotalAmount()*100)));
-		body.add("currency", "usd");
+		body.add("amount", String.valueOf(Math.round(order.getTotalAmount()*100)));
+		body.add("currency", "inr");
 		body.add("payment_method_types[]",method);
 		body.add("description", "Payment for order " + order.getId());
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.setBasicAuth(stripeSecretKey, "");
+		headers.setBearerAuth(stripeSecretKey);
 		
 		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(body, headers);
 		String stripeUrl ="https://api.stripe.com/v1/payment_intents";
 		
-		ResponseEntity<Map> response =restTemplate.postForEntity(stripeUrl, entity,Map.class );
-		if(!response.getStatusCode().is2xxSuccessful())
+		ResponseEntity<Map<String, Object>> response;
+		try
+		{
+			response = restTemplate.exchange(stripeUrl,org.springframework.http.HttpMethod.POST,
+					entity,
+					new org.springframework.core.ParameterizedTypeReference<Map<String, Object>>()
+					{});
+		}
+		catch(Exception e)
+		{
+			
+			throw new RuntimeException("Stripe API error: " + e.getMessage(),e);
+		}
+		if(!response.getStatusCode().is2xxSuccessful() || response.getBody() == null)
 		{
 			throw new RuntimeException("Stripe payment failed");
 		}
+		Map<String, Object> responseBody = response.getBody();
+		String paymentIntentId = (String) responseBody.get("id");
+		String status = Objects.toString(responseBody.get("status"), "");
 		
 			Payment payment = new Payment();
 			payment.setOrder(order);
 			payment.setAmount(order.getTotalAmount());
 			payment.setMethod(method);
 			payment.setPaymentDate(new Date());
+			payment.setTransactionId(paymentIntentId);
 			
-			payment.setStatus("Success");
-	        order.setStatus(OrderStatus.PAID);
-	        orderRepository.save(order);
+			
+			if(REQUIRES_PAYMENT_METHOD.equals(status) || REQUIRES_CONFIRMATION.equals(status) || REQUIRES_ACTION.equals(status))
+			{
+				payment.setStatus(PaymentStatus.PENDING);
+			}
+			else if(SUCCEEDED.equals(status)) 
+			{
+				payment.setStatus(PaymentStatus.SUCCESS);
+		        order.setStatus(OrderStatus.PAID);
+		        orderRepository.save(order);
+
+		    }
+			else
+			{
+				payment.setStatus(PaymentStatus.FAILED);
+			}
 
 			
 			return paymentRepository.save(payment);

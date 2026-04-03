@@ -1,6 +1,6 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
-
+import com.example.ecommerce.exception.ResourceNotFoundException;
 import com.example.ecommerce.repository.*;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +24,10 @@ public class CartService
 		this.productRepository = productRepository;
 		this.userRepository = userRepository;
 	}
+	public Cart getCart(String username)
+	{
+		return getOrCreateCart(username);
+	}
 	
 	public Cart getOrCreateCart(String username)
 	{
@@ -32,7 +36,12 @@ public class CartService
 		Optional<Cart> cartOptional = cartRepository.findByUser(user);
 		 if(cartOptional.isPresent())
 		    {
-		        return cartOptional.get();   
+			 Cart cart = cartOptional.get();
+			 if(cart.getItems() == null)
+			 {
+				 cart.setItems(new ArrayList<>());
+			 }
+		        return cart;   
 		    }
 		Cart newCart = new Cart();
 		newCart.setUser(user);
@@ -41,7 +50,11 @@ public class CartService
 		}
 	public Cart addToCart(String username, Long productId, int quantity)
 	{
-		Cart cart = getOrCreateCart(username);
+		Cart cart = getCart(username);
+		if(quantity <=0)
+		{
+			throw new RuntimeException("Quantity must be greater than 0");
+		}
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new RuntimeException("Product not found"));
 		
@@ -49,48 +62,63 @@ public class CartService
 		{
 			throw new RuntimeException("Insufficient stock available");
 		}
-		for(CartItem item : cart.getItems())
+		Optional<CartItem> existingItem = cart.getItems()
+				.stream()
+				.filter(item -> item.getProduct().getId().equals(productId))
+				.findFirst();
+		if(existingItem.isPresent())
 		{
-			if(item.getProduct().getId().equals(productId))
+			CartItem item = existingItem.get();
+			int newQuantity = item.getQuantity() + quantity;
+			if((product.getStockQuantity()) < newQuantity)
 			{
-				int newQuantity=item.getQuantity() + quantity;
-				
-				if(product.getStockQuantity()<newQuantity)
-				{
-					throw new RuntimeException("Insufficient stock available");
-				}
-				return cartRepository.save(cart);
+				throw new RuntimeException("Insufficient stock available");
 			}
+				item.setQuantity(newQuantity);
+				return cartRepository.save(cart);
 		}
 		CartItem cartItem = new CartItem();
 		cartItem.setProduct(product);
 		cartItem.setQuantity(quantity);
 		cartItem.setCart(cart);
+		
 		cart.getItems().add(cartItem);
 		return cartRepository.save(cart);
 	}
 	public Cart updateCartItem(String username, Long productId, int quantity)
 	{
-		Cart cart = getOrCreateCart(username);
+		Cart cart = getCart(username);
 		
-		for(CartItem item : cart.getItems())
+		Optional<CartItem> existingItem = cart.getItems()
+				.stream()
+				.filter(item -> item.getProduct().getId().equals(productId))
+				.findFirst();
+		if(existingItem.isPresent())
 		{
-			if(item.getProduct().getId().equals(productId))
+			if(quantity <= 0)
 			{
+				throw new RuntimeException("Quantity must be greater than 0");
+			}
+			CartItem item =existingItem.get();
+			Product product=item.getProduct();
+			if(product.getStockQuantity() < quantity)
+			{
+				throw new RuntimeException("Insufficient stock available");
+			}
 				item.setQuantity(quantity);
 				return cartRepository.save(cart);
 			}
-		}
-		throw new RuntimeException("Product not found in cart");
+		
+		throw new ResourceNotFoundException("Product not found in cart");
 	}
 	public Cart removeFromCart(String username,  Long productId)
 	{
-		Cart cart = getOrCreateCart(username);
+		Cart cart = getCart(username);
 		cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
 		return cartRepository.save(cart);
 	}
 	public Cart viewCart(String username)
 	{
-		return getOrCreateCart(username);
+		return getCart(username);
 	}
 }

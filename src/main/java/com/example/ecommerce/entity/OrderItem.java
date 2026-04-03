@@ -1,7 +1,7 @@
 package com.example.ecommerce.entity;
 import jakarta.persistence.*;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class OrderItem 
