@@ -32,19 +32,15 @@ public class User
 		{
 			
 		}
-		public User(Long id,String username, String password,String email, Set<String> roles)
+		public User(String username, String password,String email, Set<String> roles)
 		{
-			this.id=id;
+			
 			this.username=username;
 			this.password=password;
 			this.email=email;
 			this.roles =(roles != null) ? roles : new HashSet<>();
 			
 		}
-		
-		
-		
-		
 		public Long getId()
 		{
 			return id;

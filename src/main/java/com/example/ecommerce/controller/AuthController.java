@@ -5,8 +5,8 @@ import com.example.ecommerce.dto.RegisterRequest;
 import com.example.ecommerce.entity.User;
 import com.example.ecommerce.security.JwtTokenProvider;
 import com.example.ecommerce.service.UserService;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
+
 import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;

@@ -21,7 +21,7 @@ public class Product
 	
 	@NotNull
 	@DecimalMin(value = "1.0", inclusive=true)
-	private Double price;
+	private double price;
 	
 	@NotNull
 	@Min(0)
@@ -54,12 +54,12 @@ public class Product
 	{
 		this.description =description;
 	}
-	public Double getPrice()
+	public double getPrice()
 	{
 		return price;
 		
 	}
-	public void setPrice(Double price)
+	public void setPrice(double price)
 	{
 		this.price=price;
 	}

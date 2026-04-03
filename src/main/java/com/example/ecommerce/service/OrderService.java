@@ -1,10 +1,7 @@
 package com.example.ecommerce.service;
-import com.example.ecommerce.dto.OrderRequest;
 import com.example.ecommerce.entity.*;
 
 import com.example.ecommerce.repository.*;
-
-import jakarta.validation.Valid;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +25,7 @@ public class OrderService
 		this.productRepository=productRepository;
 	}
 	@Transactional
-	public Order placeOrderFromCart(String username,OrderRequest orderRequest)
+	public Order placeOrderFromCart(String username)
 	{
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new RuntimeException("User not found"));
