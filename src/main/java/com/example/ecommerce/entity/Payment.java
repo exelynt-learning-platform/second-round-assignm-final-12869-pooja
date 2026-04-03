@@ -23,7 +23,7 @@ public class Payment
 	@JoinColumn(name = "order_id")
 	private Order order;
 	
-	@Column(name ="transacton_id")
+	@Column(name ="transaction_id")
 	private String transactionId;
 	
 	public Long getId()

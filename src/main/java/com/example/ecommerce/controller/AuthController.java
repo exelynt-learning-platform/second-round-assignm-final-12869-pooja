@@ -1,10 +1,12 @@
 package com.example.ecommerce.controller;
 import com.example.ecommerce.dto.LoginRequest;
+
 import com.example.ecommerce.dto.RegisterRequest;
 import com.example.ecommerce.entity.User;
 import com.example.ecommerce.security.JwtTokenProvider;
 import com.example.ecommerce.service.UserService;
 import java.util.List;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
@@ -41,10 +43,17 @@ public class AuthController
 		user.setPassword(request.getPassword());
 		
 		User savedUser = userService.registerUser(user);
-		List<SimpleGrantedAuthority> authorities = savedUser.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role))
-				.collect(Collectors.toList());
-				
+		List<SimpleGrantedAuthority> authorities;
+		if(savedUser.getRoles() == null)
+		{
+			authorities = Collections.emptyList();
+		}
+		else
+		{
+			authorities= savedUser.getRoles().stream()
+					.map(role -> new SimpleGrantedAuthority(role))
+					.collect(Collectors.toList());
+		}
 		
 		String token = jwtTokenProvider.generateToken(savedUser.getUsername(), authorities);
 		return ResponseEntity.ok(BEARER_PREFIX+ token);

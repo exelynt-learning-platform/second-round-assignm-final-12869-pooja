@@ -28,10 +28,10 @@ public class PaymentService
 	@Value("${stripe.secret.key}")
 	private String stripeSecretKey;
 	
-	private static final String  REQUIRES_PAYMENT_METHOD = "requires_payment_method";
-	private static final String REQUIRES_CONFIRMATION = "requires_confirmation";
-	private static final String REQUIRES_ACTION = "requires_action";
-	private static final String SUCCEEDED = "succeeded";
+	private static final String  STRIPE_STATUS_REQUIRES_PAYMENT_METHOD = "requires_payment_method";
+	private static final String STRIPE_STATUS_REQUIRES_CONFIRMATION = "requires_confirmation";
+	private static final String STRIPE_STATUS_REQUIRES_ACTION = "requires_action";
+	private static final String STRIPE_STATUS_SUCCEEDED = "succeeded";
 	
 	public PaymentService(PaymentRepository paymentRepository, 
 			OrderRepository orderRepository,RestTemplate restTemplate)
@@ -101,9 +101,11 @@ public class PaymentService
 	private PaymentStatus mapStripeStatusToPaymentStatus(String stripeStatus)
 	{
 		return switch(stripeStatus) {
-        case REQUIRES_PAYMENT_METHOD, REQUIRES_CONFIRMATION, REQUIRES_ACTION -> PaymentStatus.PENDING;
-		case SUCCEEDED -> PaymentStatus.SUCCESS;
-		default -> PaymentStatus.FAILED;
+		case STRIPE_STATUS_REQUIRES_PAYMENT_METHOD,
+        STRIPE_STATUS_REQUIRES_CONFIRMATION,
+        STRIPE_STATUS_REQUIRES_ACTION -> PaymentStatus.PENDING;
+   case STRIPE_STATUS_SUCCEEDED -> PaymentStatus.SUCCESS;
+   default -> PaymentStatus.FAILED;
 		};
 	}
 }
