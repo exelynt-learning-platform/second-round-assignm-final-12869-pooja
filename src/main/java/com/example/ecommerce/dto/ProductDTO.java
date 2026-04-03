@@ -1,12 +1,32 @@
 package com.example.ecommerce.dto;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class ProductDTO 
 {
 	private Long id;
+	
+	@NotBlank(message = "Name cannot be blank")
+	@Size(min = 2, max=100,message = "Name must be 2-100 characters")
 	private String name;
+	
+	@NotBlank(message = "Description cannot be blank")
+	@Size(min=5,max=500,message="Description must be 5-500 characters")
 	private String description;
-	private double price;
-	private int stockQuantity;
+	
+	@NotNull(message="price is required")
+	@DecimalMin(value="1.0", inclusive=true, message="Price must be 1.0")
+	private Double price;
+	
+	@NotNull(message="Stock quantity is required")
+	@Min(value=0,message="Stock quantity cannot be zero")
+	private Integer stockQuantity;
+	
+	private String imageUrl;
 	
 	public Long getId()
 	{
@@ -33,20 +53,29 @@ public class ProductDTO
 	{
 		this.description =description;
 	}
-	public double getPrice()
+	public Double getPrice()
 	{
 		return price;
 	}
-	public void setPrice(double price)
+	public void setPrice(Double price)
 	{
 		this.price=price;
 	}
-	public int getStockQuantity()
+	public Integer getStockQuantity()
 	{
 		return stockQuantity;
 	}
-	public void setStockQuantity(int stockQuantity)
+	public void setStockQuantity(Integer stockQuantity)
 	{
 		this.stockQuantity = stockQuantity;
+	}
+	public String getImageUrl()
+	{
+		return imageUrl;
+		
+	}
+	public void setImageUrl(String imageUrl)
+	{
+		this.imageUrl=imageUrl;
 	}
 }

@@ -53,7 +53,7 @@ public class OrderServiceTest
 		when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
 		when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 		
-		Order order = orderService.placeOrderFromCart("pooja",null);
+		Order order = orderService.placeOrderFromCart("pooja");
 		
 		assertNotNull(order);
 		assertEquals(200.0,order.getTotalAmount(),0.001);
@@ -78,7 +78,7 @@ public class OrderServiceTest
 		
 		RuntimeException exception = assertThrows(RuntimeException.class, ()->
 		{
-			orderService.placeOrderFromCart("pooja", null);
+			orderService.placeOrderFromCart("pooja");
 		});
 		assertEquals("cart is empty", exception.getMessage());
 	}

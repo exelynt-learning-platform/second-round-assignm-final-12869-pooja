@@ -1,7 +1,9 @@
 package com.example.ecommerce.service;
+import com.example.ecommerce.dto.ProductDTO;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.exception.ProductNotFoundException;
 import com.example.ecommerce.repository.ProductRepository;
+
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -13,9 +15,16 @@ public class ProductService
 	{
 		this.productRepository = productRepository;
 	}
-	public Product createProduct(Product product)
+	public Product createProduct(ProductDTO productDTO)
 	{
+		Product product=new Product();
+		product.setName(productDTO.getName());
+		product.setDescription(productDTO.getDescription());;
+		product.setPrice(productDTO.getPrice());
+		product.setStockQuantity(product.getStockQuantity());;
+		product.setImageUrl(productDTO.getImageUrl());
 		return productRepository.save(product);
+		
 	}
 	public List<Product> getAllProduct()
 	{
@@ -26,16 +35,16 @@ public class ProductService
 		return productRepository.findById(id)
 				.orElseThrow(() -> new ProductNotFoundException("product not found with id: " + id));
 	}
-	public Product updateProduct(Long id,Product updateProduct)
+	public Product updateProduct(Long id,ProductDTO productDTO)
 	{
 		Product product = getProductbyId(id);
 		
+		product.setName(productDTO.getName());
+		product.setDescription(productDTO.getDescription());
+		product.setPrice(productDTO.getPrice());
+		product.setStockQuantity(productDTO.getStockQuantity());
+		product.setImageUrl(productDTO.getImageUrl());
 		
-		product.setName(updateProduct.getName());
-		product.setDescription(updateProduct.getDescription());
-		product.setPrice(updateProduct.getPrice());
-		product.setStockQuantity(updateProduct.getStockQuantity());
-		product.setImageUrl(updateProduct.getImageUrl());
 		return productRepository.save(product);
 	}
 	public void deleteProduct(Long id)

@@ -14,6 +14,8 @@ public class CartService
 	private final ProductRepository productRepository;
 	private final UserRepository userRepository;
 	
+	private static final int MIN_QUANTITY = 1;
+	
 	public CartService(CartRepository cartRepository,
 			CartItemRepository cartItemRepository,
 			ProductRepository productRepository,
@@ -60,9 +62,9 @@ public class CartService
 	public Cart addToCart(String username, Long productId, int quantity)
 	{
 		Cart cart = getOrCreateCart(username);
-		if(quantity <=0)
+		if(quantity <MIN_QUANTITY)
 		{
-			throw new RuntimeException("Quantity must be greater than 0");
+			throw new RuntimeException("Quantity must be at least " + MIN_QUANTITY);
 		}
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new RuntimeException("Product not found"));
@@ -110,9 +112,9 @@ public class CartService
 				.findFirst();
 		if(existingItem.isPresent())
 		{
-			if(quantity <= 0)
+			if(quantity < MIN_QUANTITY)
 			{
-				throw new RuntimeException("Quantity must be greater than 0");
+				throw new RuntimeException("Quantity must be at least " + MIN_QUANTITY);
 			}
 			CartItem item =existingItem.get();
 			Product product=item.getProduct();
@@ -130,9 +132,7 @@ public class CartService
 	{
 		Cart cart = getCart(username);
 		if(cart.getItems()!=null)
-		{
 		cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
-		}
 		return cartRepository.save(cart);
 	}
 	public Cart viewCart(String username)

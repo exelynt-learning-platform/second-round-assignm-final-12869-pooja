@@ -1,5 +1,7 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.Product;
+import com.example.ecommerce.dto.ProductDTO;
+
 
 import com.example.ecommerce.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
@@ -27,13 +29,25 @@ public class ProductServiceTest
 	@Test
 	void testAddProduct()
 	{
-		Product product = new Product();
-		product.setName("Laptop");
-		product.setPrice(1000.0);
-		when(productRepository.save(any(Product.class))).thenReturn(product);
-		Product saved = productService.createProduct(product);
-		assertEquals("Laptop" , saved.getName());
-		verify(productRepository, times(1)).save(product);
+		ProductDTO productDTO=new ProductDTO();
+		productDTO.setName("Laptop");
+		productDTO.setPrice(1000.0);
+		productDTO.setStockQuantity(5);
+		
+		Product productEntity = new Product();
+		productEntity.setName(productDTO.getName());
+		productEntity.setPrice(productDTO.getPrice());
+		productEntity.setStockQuantity(productDTO.getStockQuantity());
+		
+		when(productRepository.save(any(Product.class))).thenReturn(productEntity);
+		
+		Product saved= productService.createProduct(productDTO);
+		
+		assertEquals("Laptop",saved.getName());
+		assertEquals(1000.0,saved.getPrice());
+		assertEquals(5,saved.getStockQuantity());
+		verify(productRepository, times(1)).save(any(Product.class));
+		
 	}
 	@Test
 	void testGetAllProducts()
@@ -46,6 +60,9 @@ public class ProductServiceTest
 		when(productRepository.findAll()).thenReturn(List.of(p1,p2));
 		List<Product> products = productService.getAllProduct();
 		assertEquals(2, products.size());
+		assertEquals("Phone",products.get(0).getName());
+		assertEquals("Laptop",products.get(1).getName());
+		verify(productRepository,times(1)).findAll();
 	}
 	@Test
 	void testGetProductById()
@@ -57,5 +74,7 @@ public class ProductServiceTest
 		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 		 Product p =productService.getProductbyId(1L);
 		 assertEquals("Phone",p.getName());
+		 assertEquals(1L,p.getId());
+		 verify(productRepository, times(1)).findById(1L);
 	}
 }

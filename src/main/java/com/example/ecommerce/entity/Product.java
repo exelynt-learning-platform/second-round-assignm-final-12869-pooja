@@ -1,6 +1,5 @@
 package com.example.ecommerce.entity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "products")
@@ -10,21 +9,9 @@ public class Product
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@NotBlank
-	@Size(min = 2, max=100)
 	private String name;
-	
-	@NotBlank
-	@Size(min=5, max=500)
 	private String description;
-	
-	@NotNull
-	@DecimalMin(value = "1.0", inclusive=true)
 	private double price;
-	
-	@NotNull
-	@Min(0)
 	private int stockQuantity;
 	
 	private String imageUrl;
