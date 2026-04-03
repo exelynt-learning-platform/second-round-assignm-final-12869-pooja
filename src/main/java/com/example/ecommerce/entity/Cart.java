@@ -10,10 +10,10 @@ public class Cart
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@OneToOne
+	@ManyToOne
 	private User user;
 	
-	@OneToMany(mappedBy ="cart", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy ="cart", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	private List<CartItem> items;
 	public Cart()

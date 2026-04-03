@@ -28,8 +28,14 @@ public class CartService
 	{
 		User user=userRepository.findByUsername(username)
 				.orElseThrow(()-> new RuntimeException("User not found"));
-		return cartRepository.findByUser(user)
+	Cart cart= cartRepository.findByUser(user)
 				.orElseThrow(() -> new ResourceNotFoundException("Cart not found for user"));
+	
+	if(cart.getItems()==null)
+	{
+		cart.setItems(new ArrayList<>());
+	}
+	return cart;
 	}
 	
 	public Cart getOrCreateCart(String username)
@@ -65,6 +71,10 @@ public class CartService
 		{
 			throw new RuntimeException("Insufficient stock available");
 		}
+		if(cart.getItems() == null)
+		{
+			cart.setItems(new ArrayList<>());
+		}
 		Optional<CartItem> existingItem = cart.getItems()
 				.stream()
 				.filter(item -> item.getProduct().getId().equals(productId))
@@ -78,14 +88,16 @@ public class CartService
 				throw new RuntimeException("Insufficient stock available");
 			}
 				item.setQuantity(newQuantity);
-				return cartRepository.save(cart);
 		}
-		CartItem cartItem = new CartItem();
-		cartItem.setProduct(product);
-		cartItem.setQuantity(quantity);
-		cartItem.setCart(cart);
+		else
+		{
+			CartItem cartItem = new CartItem();
+			cartItem.setProduct(product);
+			cartItem.setQuantity(quantity);
+			cartItem.setCart(cart);
 		
 		cart.getItems().add(cartItem);
+		}
 		return cartRepository.save(cart);
 	}
 	public Cart updateCartItem(String username, Long productId, int quantity)
@@ -117,7 +129,10 @@ public class CartService
 	public Cart removeFromCart(String username,  Long productId)
 	{
 		Cart cart = getCart(username);
+		if(cart.getItems()!=null)
+		{
 		cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
+		}
 		return cartRepository.save(cart);
 	}
 	public Cart viewCart(String username)
