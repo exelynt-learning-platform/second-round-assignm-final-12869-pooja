@@ -50,5 +50,11 @@ public class GlobalExceptionHandler
 			error.put("status", HttpStatus.NOT_FOUND.value());
 			return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
 		}
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex)
+	{
+		String errorMessage =ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+		return ResponseEntity.badRequest().body(errorMessage);
+	}
 	}
 
