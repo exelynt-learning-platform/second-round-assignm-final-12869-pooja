@@ -28,10 +28,18 @@ public class PaymentService
 	@Value("${stripe.secret.key}")
 	private String stripeSecretKey;
 	
-	private static final String  STRIPE_STATUS_REQUIRES_PAYMENT_METHOD = "requires_payment_method";
-	private static final String STRIPE_STATUS_REQUIRES_CONFIRMATION = "requires_confirmation";
-	private static final String STRIPE_STATUS_REQUIRES_ACTION = "requires_action";
-	private static final String STRIPE_STATUS_SUCCEEDED = "succeeded";
+	
+	private static final String STRIPE_STATUS_REQUIRES_PAYMENT_METHOD ="requires_payment_method";
+	private static final String STRIPE_STATUS_REQUIRES_CONFIRMATION ="requires_confirmation";
+	private static final String STRIPE_STATUS_REQUIRES_ACTION ="requires_action";
+	private static final String STRIPE_STATUS_SUCCEEDED="succeeded";
+	
+	
+	private static final Set<String> PENDING_STATUSES = Set.of(
+			STRIPE_STATUS_REQUIRES_PAYMENT_METHOD,
+			STRIPE_STATUS_REQUIRES_CONFIRMATION,
+			STRIPE_STATUS_REQUIRES_ACTION);
+			
 	
 	public PaymentService(PaymentRepository paymentRepository, 
 			OrderRepository orderRepository,RestTemplate restTemplate)
@@ -100,12 +108,17 @@ public class PaymentService
 	}
 	private PaymentStatus mapStripeStatusToPaymentStatus(String stripeStatus)
 	{
-		return switch(stripeStatus) {
-		case STRIPE_STATUS_REQUIRES_PAYMENT_METHOD,
-        STRIPE_STATUS_REQUIRES_CONFIRMATION,
-        STRIPE_STATUS_REQUIRES_ACTION -> PaymentStatus.PENDING;
-   case STRIPE_STATUS_SUCCEEDED -> PaymentStatus.SUCCESS;
-   default -> PaymentStatus.FAILED;
-		};
+		if(PENDING_STATUSES.contains(stripeStatus))
+		{
+			return PaymentStatus.PENDING;
+		}
+		else if(STRIPE_STATUS_SUCCEEDED.equals(stripeStatus))
+		{
+			return PaymentStatus.SUCCESS;
+		}
+		else
+		{
+			return PaymentStatus.FAILED;
+		}
 	}
 }

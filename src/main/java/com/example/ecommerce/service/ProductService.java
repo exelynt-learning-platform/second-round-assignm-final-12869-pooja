@@ -21,7 +21,7 @@ public class ProductService
 		product.setName(productDTO.getName());
 		product.setDescription(productDTO.getDescription());;
 		product.setPrice(productDTO.getPrice());
-		product.setStockQuantity(productDTO.getStockQuantity());;
+		product.setStockQuantity(productDTO.getStockQuantity());
 		product.setImageUrl(productDTO.getImageUrl());
 		return productRepository.save(product);
 		
