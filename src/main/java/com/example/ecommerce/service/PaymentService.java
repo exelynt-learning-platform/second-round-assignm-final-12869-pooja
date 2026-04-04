@@ -28,6 +28,8 @@ public class PaymentService
 	@Value("${stripe.secret.key}")
 	private String stripeSecretKey;
 	
+	@Value("${stripe.currency}")
+	private String stripeCurrency;
 	
 	private static final String STRIPE_STATUS_REQUIRES_PAYMENT_METHOD ="requires_payment_method";
 	private static final String STRIPE_STATUS_REQUIRES_CONFIRMATION ="requires_confirmation";
@@ -48,6 +50,7 @@ public class PaymentService
 		this.orderRepository = orderRepository;
 		this.restTemplate = restTemplate;
 	}
+	
 	@Transactional
 	public Payment makePayment(Long orderId,String method)
 	{
@@ -56,7 +59,7 @@ public class PaymentService
 		
 		MultiValueMap<String,String> body = new LinkedMultiValueMap<>();
 		body.add("amount", String.valueOf(Math.round(order.getTotalAmount()*100)));
-		body.add("currency", "inr");
+		body.add("currency", stripeCurrency);
 		body.add("payment_method_types[]",method);
 		body.add("description", "Payment for order " + order.getId());
 		

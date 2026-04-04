@@ -1,6 +1,11 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
-
+import com.example.ecommerce.exception.CartEmptyException;
+import com.example.ecommerce.exception.CartNotFoundException;
+import com.example.ecommerce.exception.InsufficientStockException;
+import com.example.ecommerce.exception.OrderNotFoundException;
+import com.example.ecommerce.exception.ProductNotFoundException;
+import com.example.ecommerce.exception.UserNotFoundException;
 import com.example.ecommerce.repository.*;
 
 import org.springframework.stereotype.Service;
@@ -28,13 +33,13 @@ public class OrderService
 	public Order placeOrderFromCart(String username)
 	{
 		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new UserNotFoundException("User not found"));
 		
 		Cart cart = cartRepository.findByUser(user)
-				.orElseThrow(()-> new RuntimeException("cart not found"));
+				.orElseThrow(()-> new CartNotFoundException("cart not found"));
 		if(cart.getItems() == null || cart.getItems().isEmpty())
 		{
-			throw new RuntimeException("cart is empty");
+			throw new CartEmptyException("cart is empty");
 		}
 		
 		Order order = new Order();
@@ -48,10 +53,10 @@ public class OrderService
 		{
 			
 			Product product=productRepository.findById(cartItem.getProduct().getId())
-					.orElseThrow(() -> new RuntimeException("Product not found"));
+					.orElseThrow(() -> new ProductNotFoundException("Product not found"));
 			if(product.getStockQuantity()<cartItem.getQuantity())
 			{
-				throw new RuntimeException("Insufficient stock for product: " +product.getName());
+				throw new InsufficientStockException("Insufficient stock for product: " +product.getName());
 			}
 			product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
 			productRepository.save(product);
@@ -79,12 +84,12 @@ public class OrderService
 	public List<Order> getUserOrders(String username)
 	{
 		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new UserNotFoundException("User not found"));
 		return orderRepository.findByUser(user);
 	}
 	public Order getOrderById(Long orderId)
 	{
 		return orderRepository.findById(orderId)
-				.orElseThrow(() -> new RuntimeException("Order not found"));
+				.orElseThrow(() -> new OrderNotFoundException("Order not found"));
 	}
 }

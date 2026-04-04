@@ -107,6 +107,27 @@ public class GlobalExceptionHandler
 		return new ResponseEntity<>(error,HttpStatus.UNAUTHORIZED);
 	}
 	
+	@ExceptionHandler(CartEmptyException.class)
+	public ResponseEntity<Map<String,Object>>handleEmptyCart(CartEmptyException ex)
+	{
+		Map<String,Object> error = new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", ex.getMessage());
+		error.put("status", HttpStatus.BAD_REQUEST.value());
+		return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(OrderNotFoundException.class)
+	public ResponseEntity<Map<String,Object>>handleOrderNotFound(OrderNotFoundException ex)
+	{
+		Map<String,Object> error = new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", ex.getMessage());
+		error.put("status", HttpStatus.NOT_FOUND.value());
+		return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+		
+	}
+	
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Map<String,Object>> handleValidationException(MethodArgumentNotValidException ex)
