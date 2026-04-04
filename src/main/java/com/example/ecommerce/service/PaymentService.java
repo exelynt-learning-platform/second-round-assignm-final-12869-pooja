@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.*;
 @Service
@@ -78,8 +79,7 @@ public class PaymentService
 		{
 			response = restTemplate.exchange(stripeUrl,org.springframework.http.HttpMethod.POST,
 					entity,
-					new org.springframework.core.ParameterizedTypeReference<Map<String, Object>>()
-					{});
+					new ParameterizedTypeReference<Map<String,Object>>(){});
 		}
 		catch(Exception e)
 		{
