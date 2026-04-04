@@ -7,6 +7,20 @@ public class CartItemDTO
 	private int quantity;
 	private double price;
 	
+	public CartItemDTO()
+	{
+		
+	}
+	
+	public CartItemDTO(Long productId,String productName,int quantity,double price)
+	{
+		this.productId=productId;
+		this.productName=productName;
+		this.quantity=quantity;
+		this.price=price;
+	}
+	
+	
 	public Long getProductId()
 	{
 		return productId;
@@ -39,6 +53,12 @@ public class CartItemDTO
 	public void setPrice(double price)
 	{
 		this.price=price;
+	}
+	@Override
+	public String toString()
+	{
+		return "CartItemDTO{" + "productId=" + productId +", productName='" +productName + '\'' +",quantity=" + quantity +",price=" + price +'}';
+				
 	}
 }
 
