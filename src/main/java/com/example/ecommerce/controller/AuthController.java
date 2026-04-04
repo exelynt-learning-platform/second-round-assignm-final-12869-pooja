@@ -41,12 +41,11 @@ public class AuthController
 		user.setUsername(request.getUsername());
 		user.setEmail(request.getEmail());
 		user.setPassword(request.getPassword());
-		
+		user.setRoles(new HashSet<>());
 		User savedUser = userService.registerUser(user);
 		
-		Set<String> roles = savedUser.getRoles()!= null ? savedUser.getRoles() : Collections.emptySet();
  		
-		List<SimpleGrantedAuthority> authorities =  roles.stream()
+		List<SimpleGrantedAuthority> authorities =  savedUser.getRoles().stream()
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 		

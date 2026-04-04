@@ -1,11 +1,14 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
 
+
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.http.HttpEntity;
 import com.example.ecommerce.repository.*;
 import com.example.ecommerce.entity.PaymentStatus;
+import com.example.ecommerce.exception.OrderNotFoundException;
+import com.example.ecommerce.exception.StripeException;
 
 import jakarta.transaction.Transactional;
 
@@ -55,7 +58,7 @@ public class PaymentService
 	public Payment makePayment(Long orderId,String method)
 	{
 		Order order = orderRepository.findById(orderId)
-				.orElseThrow(() -> new RuntimeException("Order not found"));
+				.orElseThrow(() -> new OrderNotFoundException("Order not found"));
 		
 		MultiValueMap<String,String> body = new LinkedMultiValueMap<>();
 		body.add("amount", String.valueOf(Math.round(order.getTotalAmount()*100)));
@@ -85,7 +88,7 @@ public class PaymentService
 		}
 		if(!response.getStatusCode().is2xxSuccessful() || response.getBody() == null)
 		{
-			throw new RuntimeException("Stripe payment failed");
+			throw new StripeException("Stripe payment failed");
 		}
 		Map<String, Object> responseBody = response.getBody();
 		String paymentIntentId = (String) responseBody.get("id");
