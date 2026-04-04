@@ -1,8 +1,7 @@
 package com.example.ecommerce.security;
-import com.example.ecommerce.service.UserService;
-
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +18,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig 
 {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	
+	@Value("${app.cors.allowed-origin}")
+	private String allowedOrigin;
+	
 	
 	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter)	{
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -52,7 +55,7 @@ public class SecurityConfig
 	public CorsConfigurationSource corsConfigurationSource()
 	{
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("https://yourdomain.com"));
+		configuration.setAllowedOrigins(Arrays.asList(allowedOrigin));
 		configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization","Cache-Control","Content-Type"));
 		configuration.setAllowCredentials(true);

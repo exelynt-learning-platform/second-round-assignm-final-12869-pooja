@@ -116,6 +116,12 @@ public class CartService
 		Cart cart = getCart(username);
 		ensureCartItemsInitialized(cart);
 		
+		if(cart.getItems() == null || cart.getItems().isEmpty())
+		{
+			throw new CartNotFoundException("cart is Empty");
+		}
+
+		
 		Optional<CartItem> existingItem = cart.getItems()
 				.stream()
 				.filter(item -> item.getProduct().getId().equals(productId))
@@ -143,6 +149,12 @@ public class CartService
 	{
 		Cart cart = getCart(username);
 		ensureCartItemsInitialized(cart);
+		if(cart.getItems() == null || cart.getItems().isEmpty() )
+		{
+			throw new CartNotFoundException("Cart is empty");
+		}
+			
+			
 		cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
 		return cartRepository.save(cart);
 	}
