@@ -3,6 +3,8 @@ import org.springframework.http.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class GlobalExceptionHandler
 {
 	private static final Logger logger=LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<Map<String,Object>> handleNotFound(ResourceNotFoundException ex)
 	{
@@ -21,28 +24,21 @@ public class GlobalExceptionHandler
 		error.put("message",ex.getMessage());
 		error.put("status", HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
-				
-		
 	}
 	
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<String> handleBadRequest(IllegalArgumentException ex)
+	public ResponseEntity<Map<String,Object>> handleBadRequest(IllegalArgumentException ex)
 	{
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-		
+		Map<String,Object> error= new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", ex.getMessage());
+		error.put("status", HttpStatus.BAD_REQUEST.value());
+		return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
 	}
 	
 	
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<String> handleGeneral(Exception ex)
-	{
-		logger.error("Unexcepted error occured",ex);
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body("Something went wrong. Please try again later");
-	}
 	@ExceptionHandler(ProductNotFoundException.class)
-	
-		public ResponseEntity<Map<String,Object>> handleProductNotFound(ProductNotFoundException ex)
+	public ResponseEntity<Map<String,Object>> handleProductNotFound(ProductNotFoundException ex)
 		{
 			Map<String, Object> error = new HashMap<>();
 			error.put("timestamp", LocalDateTime.now());
@@ -50,12 +46,7 @@ public class GlobalExceptionHandler
 			error.put("status", HttpStatus.NOT_FOUND.value());
 			return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
 		}
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex)
-	{
-		String errorMessage =ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-		return ResponseEntity.badRequest().body(errorMessage);
-	}
+	
 	@ExceptionHandler(CartNotFoundException.class)
 	public ResponseEntity<Map<String, Object>>handleCartNotFound(CartNotFoundException ex)
 	{
@@ -65,5 +56,87 @@ public class GlobalExceptionHandler
 		error.put("status", HttpStatus.NOT_FOUND.value());
 		return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
 	}
+	
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<Map<String,Object>>handleUserNotFound(UserNotFoundException ex)
+	{
+		Map<String,Object> error=new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", ex.getMessage());
+		error.put("status", HttpStatus.NOT_FOUND.value());
+		return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(UserAlreadyExistsException.class)
+	public ResponseEntity<Map<String,Object>>handleUserAlreadyExists(UserAlreadyExistsException ex)
+	{
+		Map<String,Object> error=new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", ex.getMessage());
+		error.put("status", HttpStatus.CONFLICT.value());
+		return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+	}
+	
+	@ExceptionHandler(InsufficientStockException.class)
+	public ResponseEntity<Map<String, Object>>handleInsufficientStock(InsufficientStockException ex)
+	{
+		Map<String,Object> error = new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", ex.getMessage());
+		error.put("status", HttpStatus.BAD_REQUEST.value());
+		return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(InvalidQuantityException.class)
+	public ResponseEntity<Map<String,Object>>handleInvalidQuantity(InvalidQuantityException ex)
+	{
+		Map<String,Object> error = new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", ex.getMessage());
+		error.put("status", HttpStatus.BAD_REQUEST.value());
+		return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(InvalidCredentialsException.class)
+	public ResponseEntity<Map<String,Object>>handleInvalidCredential(InvalidCredentialsException ex)
+	{
+		Map<String,Object> error = new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", ex.getMessage());
+		error.put("status", HttpStatus.UNAUTHORIZED.value());
+		return new ResponseEntity<>(error,HttpStatus.UNAUTHORIZED);
+	}
+	
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<Map<String,Object>> handleValidationException(MethodArgumentNotValidException ex)
+	{
+		List<String> errors = ex.getBindingResult()
+				.getAllErrors()
+				.stream()
+				.map(error -> error.getDefaultMessage())
+				.collect(Collectors.toList());
+		logger.info("Validation error : {}", errors);
+		
+		Map<String,Object> errorResponse=new HashMap<>();
+		errorResponse.put("timestamp", LocalDateTime.now());
+		errorResponse.put("message", errors);
+		errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+		return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+	}
+	
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<Map<String,Object> >handleGeneral(Exception ex)
+	{
+		logger.error("Unexpected error occured",ex);
+		Map<String,Object> error=new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message","Something went wrong. Please try again later.");
+		error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
 }
+
 
