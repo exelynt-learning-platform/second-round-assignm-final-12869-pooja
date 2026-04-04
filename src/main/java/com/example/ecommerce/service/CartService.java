@@ -114,6 +114,7 @@ public class CartService
 	public Cart updateCartItem(String username, Long productId, int quantity)
 	{
 		Cart cart = getCart(username);
+		ensureCartItemsInitialized(cart);
 		
 		Optional<CartItem> existingItem = cart.getItems()
 				.stream()

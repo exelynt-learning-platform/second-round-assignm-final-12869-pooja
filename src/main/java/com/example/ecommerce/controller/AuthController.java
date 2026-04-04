@@ -44,7 +44,7 @@ public class AuthController
 		
 		User savedUser = userService.registerUser(user);
 		
-		Set<String> roles = savedUser.getRoles();
+		Set<String> roles = savedUser.getRoles()!= null ? savedUser.getRoles() : Collections.emptySet();
  		
 		List<SimpleGrantedAuthority> authorities =  roles.stream()
 				.map(SimpleGrantedAuthority::new)
