@@ -44,9 +44,13 @@ public class AuthController
 		
 		User savedUser = userService.registerUser(user);
 		
-		Set<String> role = savedUser.getRoles() != null ? savedUser.getRoles() : new HashSet<>();
+		Set<String> roles = savedUser.getRoles(); 
+		if(roles == null)
+		{
+			roles=new HashSet<>();
+		}
  		
-		List<SimpleGrantedAuthority> authorities =  role.stream()
+		List<SimpleGrantedAuthority> authorities =  roles.stream()
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 		

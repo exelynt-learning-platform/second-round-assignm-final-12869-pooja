@@ -36,17 +36,19 @@ public class CartServiceTest
 	@Test
 	void testGetOrCreateCart_ExistingCart()
 	{
+		String username="pooja";
+		
 		User user = new User();
-		user.setUsername("join");
+		user.setUsername(username);
 		
 		Cart cart = new Cart();
 		cart.setUser(user);
 		cart.setItems(new ArrayList<>());
 		
-		when(userRepository.findByUsername("pooja")).thenReturn(Optional.of(user));
+		when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 		when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
 		
-		Cart result = cartService.getOrCreateCart("pooja");
+		Cart result = cartService.getOrCreateCart(username);
 		
 		assertNotNull(result);
 		assertEquals(user, result.getUser());
@@ -55,10 +57,11 @@ public class CartServiceTest
 	@Test
 	void testGetOrCreateCart_NewCart()
 	{
+		String username="pooja";
 		User user =new User();
-		user.setUsername("john");
+		user.setUsername(username);
 		
-		when(userRepository.findByUsername("pooja")).thenReturn(Optional.of(user));
+		when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 		when(cartRepository.findByUser(user)).thenReturn(Optional.empty());
 		
 		Cart savedCart = new Cart();
@@ -67,7 +70,7 @@ public class CartServiceTest
 		
 		when(cartRepository.save(any(Cart.class))).thenReturn(savedCart);
 		
-		Cart result = cartService.getOrCreateCart("pooja");
+		Cart result = cartService.getOrCreateCart(username);
 		assertNotNull(result);
 		verify(cartRepository, times(1)).save(any(Cart.class));
 		
@@ -75,21 +78,23 @@ public class CartServiceTest
 	@Test
 	void testAddToCart_NewItem()
 	{
+		String username="pooja";
 		User user = new User();
-		user.setUsername("pooja");
+		user.setUsername(username);
 		
 		Product product = new Product();
 		product.setId(1L);
+		product.setStockQuantity(10);
 		Cart cart = new Cart();
 		cart.setUser(user);
 		cart.setItems(new ArrayList<>());
 		
-		when(userRepository.findByUsername("pooja")).thenReturn(Optional.of(user));
+		when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 		when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
 		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 		when(cartRepository.save(any(Cart.class))).thenReturn(cart);
 		
-		Cart result = cartService.addToCart("pooja", 1L, 2);
+		Cart result = cartService.addToCart(username, 1L, 2);
 		
 		assertEquals(1,result.getItems().size());
 		verify(cartRepository).save(cart);
@@ -98,11 +103,13 @@ public class CartServiceTest
 	@Test
 	void testUpdateCartItem()
 	{
+		String username="pooja";
 		User user = new User();
-		user.setUsername("pooja");
+		user.setUsername(username);
 		
 		Product product= new Product();
 		product.setId(1L);
+		product.setStockQuantity(10);
 		
 		CartItem item = new CartItem();
 		item.setProduct(product);
@@ -113,11 +120,11 @@ public class CartServiceTest
 		cart.setUser(user);
 		cart.setItems(new ArrayList<>(List.of(item)));
 		
-		when(userRepository.findByUsername("pooja")).thenReturn(Optional.of(user));
+		when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 		when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
 		when(cartRepository.save(any(Cart.class))).thenReturn(cart);
 		
-		Cart result = cartService.updateCartItem("pooja", 1L, 5);
+		Cart result = cartService.updateCartItem(username, 1L, 5);
 		
 		assertEquals(5,result.getItems().get(0).getQuantity());
 	}
@@ -125,8 +132,9 @@ public class CartServiceTest
 	@Test
 	void testRemoveFromCart()
 	{
+		String username="pooja";
 		User user = new User();
-		user.setUsername("pooja");
+		user.setUsername(username);
 		
 		Product product = new Product();
 		product.setId(1L);
@@ -137,27 +145,28 @@ public class CartServiceTest
 		cart.setUser(user);
 		cart.setItems(new ArrayList<>(List.of(item)));
 		
-		when(userRepository.findByUsername("pooja")).thenReturn(Optional.of(user));
+		when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 		when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
 		when(cartRepository.save(any(Cart.class))).thenReturn(cart);
 		
-		Cart result = cartService.removeFromCart("pooja", 1L);
+		Cart result = cartService.removeFromCart(username, 1L);
 		
 		assertEquals(0,result.getItems().size());
 	}
 	@Test
 	void testViewCart()
 	{
+		String username="pooja";
 		User user = new User();
-		user.setUsername("pooja");
+		user.setUsername(username);
 		
 		Cart cart = new Cart();
 		cart.setUser(user);
-		
-		when(userRepository.findByUsername("pooja")).thenReturn(Optional.of(user));
+		cart.setItems(new ArrayList<>());
+		when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 		when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
 		
-		Cart result = cartService.viewCart("pooja");
+		Cart result = cartService.viewCart(username);
 		assertNotNull(result);
 	}
 	
