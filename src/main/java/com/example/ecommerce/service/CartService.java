@@ -6,6 +6,7 @@ import com.example.ecommerce.repository.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -36,6 +37,7 @@ public class CartService
 			cart.setItems(new ArrayList<>());
 		}
 	}
+	@Transactional
 	public Cart getCart(String username)
 	{
 		User user=userRepository.findByUsername(username)
@@ -47,6 +49,7 @@ public class CartService
 	return cart;
 	}
 	
+	@Transactional
 	public Cart getOrCreateCart(String username)
 	{
 		User user = userRepository.findByUsername(username)
@@ -63,6 +66,7 @@ public class CartService
 		ensureCartItemsInitialized(newCart);
 		return cartRepository.save(newCart);
 		}
+	@Transactional
 	public Cart addToCart(String username, Long productId, int quantity)
 	{
 		Cart cart = getOrCreateCart(username);
@@ -103,6 +107,7 @@ public class CartService
 		}
 		return cartRepository.save(cart);
 	}
+	@Transactional
 	public Cart updateCartItem(String username, Long productId, int quantity)
 	{
 		Cart cart = getCart(username);
@@ -129,6 +134,7 @@ public class CartService
 		
 		throw new ResourceNotFoundException("Product not found in cart");
 	}
+	@Transactional
 	public Cart removeFromCart(String username,  Long productId)
 	{
 		Cart cart = getCart(username);
@@ -136,6 +142,7 @@ public class CartService
 		cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
 		return cartRepository.save(cart);
 	}
+	@Transactional
 	public Cart viewCart(String username)
 	{
 		return getCart(username);

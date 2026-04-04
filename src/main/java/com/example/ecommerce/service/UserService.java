@@ -37,9 +37,9 @@ public class UserService
 		return userRepository.save(user);
 		
 	}
-	public String login(String email, String password)
+	public String login(String username, String password)
 	{
-		Optional<User> optionalUser = userRepository.findByEmail(email);
+		Optional<User> optionalUser = userRepository.findByUsername(username);
 		if(optionalUser.isEmpty())
 		{
 			throw new RuntimeException("Invalid credentials");

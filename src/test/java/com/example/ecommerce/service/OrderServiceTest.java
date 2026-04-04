@@ -27,8 +27,12 @@ public class OrderServiceTest
 	@Mock
 	private UserRepository userRepository;
 	
+	@Mock
+	private ProductRepository productRepository;
+	
 	@InjectMocks
 	private OrderService orderService;
+	
 	
 	@Test
 	void testPlaceOrder_Success()
@@ -39,6 +43,7 @@ public class OrderServiceTest
 		Product product = new Product();
 		product.setId(1L);
 		product.setPrice(100.0);
+		product.setStockQuantity(10);
 		
 		
 		CartItem cartItem = new CartItem();
@@ -51,6 +56,7 @@ public class OrderServiceTest
 		
 		when(userRepository.findByUsername("pooja")).thenReturn(Optional.of(user));
 		when(cartRepository.findByUser(user)).thenReturn(Optional.of(cart));
+		when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 		when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 		
 		Order order = orderService.placeOrderFromCart("pooja");
@@ -62,6 +68,7 @@ public class OrderServiceTest
 		
 		verify(cartRepository).save(cart);
 		
+		verify(productRepository).save(product);
 	}
 	@Test
 	void testPlaceOrder_EmptyCart()
@@ -119,15 +126,7 @@ public class OrderServiceTest
 		});
 		
 		assertEquals("Order not found", exception.getMessage());
-		
-		
 	}
-	
-	
-	
-	
-	
-	
 }
 
 
