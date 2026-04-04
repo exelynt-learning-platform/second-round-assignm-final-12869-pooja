@@ -43,7 +43,7 @@ public class CartService
 	public Cart getOrCreateCart(String username)
 	{
 		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new RuntimeException("user not found"));
+				.orElseThrow(() -> new RuntimeException("User not found"));
 		Optional<Cart> cartOptional = cartRepository.findByUser(user);
 		 if(cartOptional.isPresent())
 		    {

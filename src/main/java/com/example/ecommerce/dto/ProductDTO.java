@@ -23,7 +23,7 @@ public class ProductDTO
 	private Double price;
 	
 	@NotNull(message="Stock quantity is required")
-	@Min(value=0,message="Stock quantity cannot be zero")
+	@Min(value=0,message="Stock quantity cannot be negative")
 	private Integer stockQuantity;
 	
 	private String imageUrl;
