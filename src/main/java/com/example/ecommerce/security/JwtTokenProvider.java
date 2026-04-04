@@ -1,6 +1,7 @@
 package com.example.ecommerce.security;
 import io.jsonwebtoken.*;
 
+
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import com.example.ecommerce.entity.Role;
 @Component
 
 public class JwtTokenProvider 

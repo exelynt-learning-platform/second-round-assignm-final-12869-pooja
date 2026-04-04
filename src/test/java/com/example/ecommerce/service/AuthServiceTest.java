@@ -1,13 +1,12 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.User;
+
 import com.example.ecommerce.repository.UserRepository;
-import com.example.ecommerce.security.JwtTokenProvider;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.mock.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;

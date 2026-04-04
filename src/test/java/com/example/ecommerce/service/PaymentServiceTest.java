@@ -1,6 +1,7 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
 
+
 import com.example.ecommerce.repository.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +63,7 @@ public class PaymentServiceTest
 		assertNotNull(payment);
 		assertEquals(200.0,payment.getAmount());
 		assertEquals("card",payment.getMethod());
-		assertEquals("Success",payment.getStatus());
+		assertEquals(PaymentStatus.SUCCESS,payment.getStatus());
 	 
 		assertEquals(OrderStatus.PAID,order.getStatus());
 	 	verify(orderRepository).save(order);
