@@ -29,7 +29,7 @@ public class OrderService
 		this.userRepository=userRepository;
 		this.productRepository=productRepository;
 	}
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public Order placeOrderFromCart(String username)
 	{
 		User user = userRepository.findByUsername(username)
@@ -59,7 +59,7 @@ public class OrderService
 				throw new InsufficientStockException("Insufficient stock for product: " +product.getName());
 			}
 			product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
-			productRepository.save(product);
+			
 	
 			OrderItem orderItem = new OrderItem();
 			orderItem.setOrder(order);
