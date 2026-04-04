@@ -1,7 +1,10 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
-
-import com.example.ecommerce.exception.ResourceNotFoundException;
+import com.example.ecommerce.exception.CartNotFoundException;
+import com.example.ecommerce.exception.InsufficientStockException;
+import com.example.ecommerce.exception.InvalidQuantityException;
+import com.example.ecommerce.exception.ProductNotFoundException;
+import com.example.ecommerce.exception.UserNotFoundException;
 import com.example.ecommerce.repository.*;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -41,9 +44,9 @@ public class CartService
 	public Cart getCart(String username)
 	{
 		User user=userRepository.findByUsername(username)
-				.orElseThrow(()-> new RuntimeException("User not found"));
+				.orElseThrow(()-> new UserNotFoundException("User not found"));
 	Cart cart= cartRepository.findByUser(user)
-				.orElseThrow(() -> new ResourceNotFoundException("Cart not found for user"));
+				.orElseThrow(() -> new CartNotFoundException("Cart not found for user"));
 	
 		ensureCartItemsInitialized(cart);
 	return cart;
@@ -53,7 +56,7 @@ public class CartService
 	public Cart getOrCreateCart(String username)
 	{
 		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new UserNotFoundException("User not found"));
 		Optional<Cart> cartOptional = cartRepository.findByUser(user);
 		 if(cartOptional.isPresent())
 		    {
@@ -72,14 +75,14 @@ public class CartService
 		Cart cart = getOrCreateCart(username);
 		if(quantity <minQuantity)
 		{
-			throw new RuntimeException("Quantity must be at least " + minQuantity);
+			throw new InvalidQuantityException("Quantity must be at least " + minQuantity);
 		}
 		Product product = productRepository.findById(productId)
-				.orElseThrow(() -> new RuntimeException("Product not found"));
+				.orElseThrow(() -> new ProductNotFoundException("Product not found"));
 		
 		if(product.getStockQuantity()<quantity)
 		{
-			throw new RuntimeException("Insufficient stock available");
+			throw new InsufficientStockException("Insufficient stock available");
 		}
 		ensureCartItemsInitialized(cart);
 		Optional<CartItem> existingItem = cart.getItems()
@@ -92,7 +95,7 @@ public class CartService
 			int newQuantity = item.getQuantity() + quantity;
 			if((product.getStockQuantity()) < newQuantity)
 			{
-				throw new RuntimeException("Insufficient stock available");
+				throw new InsufficientStockException("Insufficient stock available");
 			}
 				item.setQuantity(newQuantity);
 		}
@@ -120,19 +123,19 @@ public class CartService
 		{
 			if(quantity < minQuantity)
 			{
-				throw new RuntimeException("Quantity must be at least " + minQuantity);
+				throw new InvalidQuantityException("Quantity must be at least " + minQuantity);
 			}
 			CartItem item =existingItem.get();
 			Product product=item.getProduct();
 			if(product.getStockQuantity() < quantity)
 			{
-				throw new RuntimeException("Insufficient stock available");
+				throw new InsufficientStockException("Insufficient stock available");
 			}
 				item.setQuantity(quantity);
 				return cartRepository.save(cart);
 			}
 		
-		throw new ResourceNotFoundException("Product not found in cart");
+		throw new CartNotFoundException("Product not found in cart");
 	}
 	@Transactional
 	public Cart removeFromCart(String username,  Long productId)

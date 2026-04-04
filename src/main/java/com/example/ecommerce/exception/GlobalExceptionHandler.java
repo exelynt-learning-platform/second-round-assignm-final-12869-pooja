@@ -14,10 +14,17 @@ public class GlobalExceptionHandler
 {
 	private static final Logger logger=LoggerFactory.getLogger(GlobalExceptionHandler.class);
 	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<String> handleNotFound(ResourceNotFoundException ex)
+	public ResponseEntity<Map<String,Object>> handleNotFound(ResourceNotFoundException ex)
 	{
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+		Map<String,Object> error=new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message",ex.getMessage());
+		error.put("status", HttpStatus.NOT_FOUND.value());
+		return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+				
+		
 	}
+	
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<String> handleBadRequest(IllegalArgumentException ex)
 	{
@@ -49,5 +56,14 @@ public class GlobalExceptionHandler
 		String errorMessage =ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
 		return ResponseEntity.badRequest().body(errorMessage);
 	}
+	@ExceptionHandler(CartNotFoundException.class)
+	public ResponseEntity<Map<String, Object>>handleCartNotFound(CartNotFoundException ex)
+	{
+		Map<String,Object> error = new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", ex.getMessage());
+		error.put("status", HttpStatus.NOT_FOUND.value());
+		return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
 	}
+}
 
