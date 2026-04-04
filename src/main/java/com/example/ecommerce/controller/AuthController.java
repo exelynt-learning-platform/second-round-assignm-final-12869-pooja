@@ -45,8 +45,8 @@ public class AuthController
 		User savedUser = userService.registerUser(user);
 		
  		
-		List<SimpleGrantedAuthority> authorities =  savedUser.getRoles().stream()
-				.map(SimpleGrantedAuthority::new)
+		Collection<SimpleGrantedAuthority> authorities =  savedUser.getRoles().stream()
+				.map(role -> new SimpleGrantedAuthority(role))
 				.collect(Collectors.toList());
 		
 		
