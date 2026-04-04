@@ -1,7 +1,10 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.*;
+
 import com.example.ecommerce.exception.ResourceNotFoundException;
 import com.example.ecommerce.repository.*;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -10,21 +13,20 @@ import java.util.*;
 public class CartService 
 {
 	private final CartRepository cartRepository;
-	private final CartItemRepository cartItemRepository;
 	private final ProductRepository productRepository;
 	private final UserRepository userRepository;
 	
-	private static final int MIN_QUANTITY = 1;
+	private final int minQuantity;
 	
 	public CartService(CartRepository cartRepository,
-			CartItemRepository cartItemRepository,
 			ProductRepository productRepository,
-			UserRepository userRepository)
+			UserRepository userRepository,
+			@Value("${cart.min.quantity}") int minQuantity)
 	{
 		this.cartRepository = cartRepository;
-		this.cartItemRepository =cartItemRepository;
 		this.productRepository = productRepository;
 		this.userRepository = userRepository;
+		this.minQuantity=minQuantity;
 	}
 	public Cart getCart(String username)
 	{
@@ -62,9 +64,9 @@ public class CartService
 	public Cart addToCart(String username, Long productId, int quantity)
 	{
 		Cart cart = getOrCreateCart(username);
-		if(quantity <MIN_QUANTITY)
+		if(quantity <minQuantity)
 		{
-			throw new RuntimeException("Quantity must be at least " + MIN_QUANTITY);
+			throw new RuntimeException("Quantity must be at least " + minQuantity);
 		}
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new RuntimeException("Product not found"));
@@ -112,9 +114,9 @@ public class CartService
 				.findFirst();
 		if(existingItem.isPresent())
 		{
-			if(quantity < MIN_QUANTITY)
+			if(quantity < minQuantity)
 			{
-				throw new RuntimeException("Quantity must be at least " + MIN_QUANTITY);
+				throw new RuntimeException("Quantity must be at least " + minQuantity);
 			}
 			CartItem item =existingItem.get();
 			Product product=item.getProduct();
