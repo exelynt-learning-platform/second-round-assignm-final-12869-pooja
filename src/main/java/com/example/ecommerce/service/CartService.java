@@ -28,6 +28,14 @@ public class CartService
 		this.userRepository = userRepository;
 		this.minQuantity=minQuantity;
 	}
+	
+	private void ensureCartItemsInitialized(Cart cart)
+	{
+		if(cart.getItems()==null)
+		{
+			cart.setItems(new ArrayList<>());
+		}
+	}
 	public Cart getCart(String username)
 	{
 		User user=userRepository.findByUsername(username)
@@ -35,10 +43,7 @@ public class CartService
 	Cart cart= cartRepository.findByUser(user)
 				.orElseThrow(() -> new ResourceNotFoundException("Cart not found for user"));
 	
-	if(cart.getItems()==null)
-	{
-		cart.setItems(new ArrayList<>());
-	}
+		ensureCartItemsInitialized(cart);
 	return cart;
 	}
 	
@@ -50,15 +55,12 @@ public class CartService
 		 if(cartOptional.isPresent())
 		    {
 			 Cart cart = cartOptional.get();
-			 if(cart.getItems() == null)
-			 {
-				 cart.setItems(new ArrayList<>());
-			 }
+			 ensureCartItemsInitialized(cart);
 		        return cart;   
 		    }
 		Cart newCart = new Cart();
 		newCart.setUser(user);
-		newCart.setItems(new ArrayList<>());
+		ensureCartItemsInitialized(newCart);
 		return cartRepository.save(newCart);
 		}
 	public Cart addToCart(String username, Long productId, int quantity)
@@ -75,10 +77,7 @@ public class CartService
 		{
 			throw new RuntimeException("Insufficient stock available");
 		}
-		if(cart.getItems() == null)
-		{
-			cart.setItems(new ArrayList<>());
-		}
+		ensureCartItemsInitialized(cart);
 		Optional<CartItem> existingItem = cart.getItems()
 				.stream()
 				.filter(item -> item.getProduct().getId().equals(productId))
@@ -133,7 +132,7 @@ public class CartService
 	public Cart removeFromCart(String username,  Long productId)
 	{
 		Cart cart = getCart(username);
-		if(cart.getItems()!=null)
+		ensureCartItemsInitialized(cart);
 		cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
 		return cartRepository.save(cart);
 	}
