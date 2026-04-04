@@ -43,17 +43,13 @@ public class AuthController
 		user.setPassword(request.getPassword());
 		
 		User savedUser = userService.registerUser(user);
-		List<SimpleGrantedAuthority> authorities;
-		if(savedUser.getRoles() == null)
-		{
-			authorities = Collections.emptyList();
-		}
-		else
-		{
-			authorities= savedUser.getRoles().stream()
-					.map(role -> new SimpleGrantedAuthority(role))
-					.collect(Collectors.toList());
-		}
+		
+		Set<String> role = savedUser.getRoles() != null ? savedUser.getRoles() : new HashSet<>();
+ 		
+		List<SimpleGrantedAuthority> authorities =  role.stream()
+				.map(SimpleGrantedAuthority::new)
+				.collect(Collectors.toList());
+		
 		
 		String token = jwtTokenProvider.generateToken(savedUser.getUsername(), authorities);
 		return ResponseEntity.ok(BEARER_PREFIX+ token);
