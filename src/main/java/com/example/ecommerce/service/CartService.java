@@ -105,7 +105,7 @@ public class CartService
 	{
 		Cart cart = getCart(username);
 		
-		if(cart.getItems().isEmpty())
+		if(cart.getItems() == null ||cart.getItems().isEmpty())
 		{
 			throw new CartNotFoundException("cart is Empty");
 		}
@@ -137,7 +137,7 @@ public class CartService
 	public Cart removeFromCart(String username,  Long productId)
 	{
 		Cart cart = getCart(username);
-		if(cart.getItems().isEmpty() )
+		if(cart.getItems() == null || cart.getItems().isEmpty() )
 		{
 			throw new CartNotFoundException("Cart is empty");
 		}
