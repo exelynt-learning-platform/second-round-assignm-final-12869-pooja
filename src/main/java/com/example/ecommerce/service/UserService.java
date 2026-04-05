@@ -11,6 +11,10 @@ import java.util.*;
 @Service
 public class UserService 
 {
+	private static final String PASSWORD_REGEX =
+	        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+
+	
 	private final UserRepository userRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
 	
@@ -19,6 +23,13 @@ public class UserService
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		
+	}
+	private void validPassword(String password)
+	{
+		if(password == null || !password.matches(PASSWORD_REGEX))
+		{
+			throw new IllegalArgumentException("Password must be at least 8 characters including uppercase,lowercase,number and special character");
+		}
 	}
 	public User registerUser(User user,Set<String> requestRoles)
 	{
@@ -30,6 +41,9 @@ public class UserService
 		{
 			throw new UserAlreadyExistsException("Email alreay exists");
 		}
+		
+		validPassword(user.getPassword());
+		
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		
 		Set<String> roles =new HashSet<>();
