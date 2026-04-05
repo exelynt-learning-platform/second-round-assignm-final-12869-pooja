@@ -37,10 +37,6 @@ public class CartService
 	@Transactional
 	public Cart getCart(String username)
 	{
-		User user=userRepository.findByUsername(username)
-				.orElseThrow(()-> new UserNotFoundException("User not found"));
-	Cart cart= cartRepository.findByUser(user)
-				.orElseThrow(() -> new CartNotFoundException("Cart not found for user"));
 	
 	return getOrCreateCart(username);
 	}
