@@ -28,7 +28,7 @@ public class CartController
 	@PostMapping("/add")
 	public Cart addToCart(
 			Authentication authentication,
-			@RequestParam @NotNull(message="Product Id is required") Long productId,
+			@RequestParam @NotNull Long productId,
 			@RequestParam @Min(1)int quantity)
 	{
 		String username = authentication.getName();
@@ -37,7 +37,7 @@ public class CartController
 	@PutMapping("/update")
 	public Cart updateCart(
 			Authentication authentication,
-			@RequestParam @NotNull(message ="Product Id is required") Long productId,
+			@RequestParam @NotNull Long productId,
 			@RequestParam @Min(1) int quantity)
 	{
 		String username =authentication.getName();
@@ -46,7 +46,7 @@ public class CartController
 	@DeleteMapping("/remove")
 	public Cart removeFromCart(
 			Authentication authentication,
-			@RequestParam @NotNull(message ="Product Id is required") Long productId)
+			@RequestParam @NotNull Long productId)
 	{
 		String username = authentication.getName();
 		return cartService.removeFromCart(username, productId);
