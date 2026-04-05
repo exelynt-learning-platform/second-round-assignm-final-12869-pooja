@@ -25,7 +25,7 @@ public class CartService
 	public CartService(CartRepository cartRepository,
 			ProductRepository productRepository,
 			UserRepository userRepository,
-			@Value("${cart.min.quantity}") int minQuantity)
+			@Value("${cart.min.quantity:1}") int minQuantity)
 	{
 		this.cartRepository = cartRepository;
 		this.productRepository = productRepository;
