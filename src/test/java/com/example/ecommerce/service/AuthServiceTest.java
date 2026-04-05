@@ -1,6 +1,7 @@
 package com.example.ecommerce.service;
 import com.example.ecommerce.entity.User;
 
+
 import com.example.ecommerce.repository.UserRepository;
 
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
-
+import java.util.Set;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,9 +41,10 @@ class AuthServiceTest
 		user.setEmail("pooja@gmail.com");
 		user.setPassword("123");
 		
+		Set<String> roles=Set.of("USER");
 		when(userRepository.save(any(User.class))).thenReturn(user);
 		
-		User saved = userService.registerUser(user);
+		User saved = userService.registerUser(user, roles);
 		assertEquals("pooja@gmail.com", saved.getEmail());
 		verify(userRepository, times(1)).save(user);
 	}
