@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
+@Table(name = "order_items")
 public class OrderItem 
 {
 	@Id
@@ -19,8 +20,10 @@ public class OrderItem
 	@JoinColumn(name = "product_id")
 	private Product product;
 	
+	@Column(name = "quantity")
 	private int quantity;
 	
+	@Column(name = "price")
 	private double price;
 	
 	public Long getId()
