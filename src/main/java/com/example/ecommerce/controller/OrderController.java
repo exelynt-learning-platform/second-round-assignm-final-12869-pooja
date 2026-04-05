@@ -43,7 +43,7 @@ public class OrderController
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
 		}
 		
-		if(order.getUser() == null || !order.getUser().getUsername().equals(username))
+		if(!order.getUser().getUsername().equals(username))
 		{
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not authorized to view this order");
 		}
