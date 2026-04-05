@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 
 @RestController
@@ -27,7 +28,7 @@ public class CartController
 	@PostMapping("/add")
 	public Cart addToCart(
 			Authentication authentication,
-			@RequestParam Long productId,
+			@RequestParam @NotNull(message="Product Id is required") Long productId,
 			@RequestParam @Min(1)int quantity)
 	{
 		String username = authentication.getName();
@@ -36,7 +37,7 @@ public class CartController
 	@PutMapping("/update")
 	public Cart updateCart(
 			Authentication authentication,
-			@RequestParam Long productId,
+			@RequestParam @NotNull(message ="Product Id is required") Long productId,
 			@RequestParam @Min(1) int quantity)
 	{
 		String username =authentication.getName();
@@ -45,7 +46,7 @@ public class CartController
 	@DeleteMapping("/remove")
 	public Cart removeFromCart(
 			Authentication authentication,
-			@RequestParam Long productId)
+			@RequestParam @NotNull(message ="Product Id is required") Long productId)
 	{
 		String username = authentication.getName();
 		return cartService.removeFromCart(username, productId);

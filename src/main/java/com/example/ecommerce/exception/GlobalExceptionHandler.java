@@ -169,8 +169,13 @@ public class GlobalExceptionHandler
 		return new ResponseEntity<>(error,HttpStatus.CONFLICT);
 	}
 	
-	
-	
+	@ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public String handleValidationException(jakarta.validation.ConstraintViolationException ex)
+	{
+		return ex.getMessage();
+	}
+
 	
 	
 	
