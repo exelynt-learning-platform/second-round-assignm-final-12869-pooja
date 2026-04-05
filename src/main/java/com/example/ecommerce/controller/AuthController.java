@@ -1,6 +1,7 @@
 package com.example.ecommerce.controller;
 import com.example.ecommerce.dto.LoginRequest;
 
+
 import com.example.ecommerce.dto.RegisterRequest;
 import com.example.ecommerce.entity.User;
 import com.example.ecommerce.security.JwtTokenProvider;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,28 +28,32 @@ public class AuthController
 	private final UserService userService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final AuthenticationManager authenticationManager;
+	private final PasswordEncoder passwordEncoder;
 	
 	
-	public AuthController(UserService userService, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager)
+	public AuthController(UserService userService, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder)
 	{
 		this.userService = userService;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.authenticationManager = authenticationManager;
+		this.passwordEncoder=passwordEncoder;
 	}
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request)
 	{
+		
 		User user = new User();
 		user.setUsername(request.getUsername());
 		user.setEmail(request.getEmail());
-		user.setPassword(request.getPassword());
-		user.setRoles(new HashSet<>());
-		User savedUser = userService.registerUser(user);
+		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		
+		Set<String> roles = new HashSet<>();
+		roles.add("ROLE_USER");
+		User savedUser = userService.registerUser(user, roles);
  		
-		Collection<SimpleGrantedAuthority> authorities =  savedUser.getRoles().stream()
+		Collection<SimpleGrantedAuthority> authorities =  savedUser.getRoles() != null ? savedUser.getRoles().stream()
 				.map(role -> new SimpleGrantedAuthority(role))
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()):Collections.emptyList();
 		
 		
 		String token = jwtTokenProvider.generateToken(savedUser.getUsername(), authorities);
@@ -56,10 +62,11 @@ public class AuthController
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request)
 	{
+		
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.getUsername(),request.getPassword()));
 		
-		String token = jwtTokenProvider.generateToken(request.getUsername(),authentication.getAuthorities());
+		String token = jwtTokenProvider.generateToken(authentication.getName(),authentication.getAuthorities());
 		
 		return ResponseEntity.ok(BEARER_PREFIX + token);
 		

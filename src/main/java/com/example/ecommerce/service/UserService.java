@@ -20,7 +20,7 @@ public class UserService
 		this.passwordEncoder = passwordEncoder;
 		
 	}
-	public User registerUser(User user)
+	public User registerUser(User user,Set<String> requestRoles)
 	{
 		if(userRepository.existsByUsername(user.getUsername()))
 		{
@@ -28,17 +28,33 @@ public class UserService
 		}
 		if(userRepository.existsByEmail(user.getEmail()))
 		{
-			throw new UserAlreadyExistsException("Email already exists");
+			throw new UserAlreadyExistsException("Email alreay exists");
 		}
-		
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		Set<String> roles = new HashSet<>();
-		roles.add(Role.ROLE_USER.name());
+		
+		Set<String> roles =new HashSet<>();
+		if(requestRoles == null || requestRoles.isEmpty())
+		{
+			roles.add(Role.ROLE_USER.name());
+		}
+		else
+		{
+			for(String role : requestRoles)
+			{
+				if(role.equals(Role.ROLE_USER.name()) || role.equals(Role.ROLE_ADMIN.name()))
+				{
+					roles.add(role);
+				}
+				else
+				{
+					throw new IllegalArgumentException("Invalid role:" +role);
+				}
+			}
+		}
 		user.setRoles(roles);
-		
 		return userRepository.save(user);
-		
 	}
+	
 	public String login(String username, String password)
 	{
 		Optional<User> optionalUser = userRepository.findByUsername(username);
