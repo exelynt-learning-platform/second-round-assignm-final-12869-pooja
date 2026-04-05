@@ -50,29 +50,25 @@ public class CartService
 	{
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundException("User not found"));
-		Optional<Cart> cartOptional = cartRepository.findByUser(user);
-		 if(cartOptional.isPresent())
-		    {
-			 Cart cart = cartOptional.get();
-			 if(cart.getItems() == null)
-			 {
-				 cart.setItems(new ArrayList<>());
-			 }
-		        return cart;   
-		    }
-		Cart newCart = new Cart();
-		newCart.setUser(user);
-		newCart.setItems(new ArrayList<>());
-		return cartRepository.save(newCart);
+		
+		return cartRepository.findByUser(user)
+				.orElseGet(() -> 
+				{
+					Cart newCart = new Cart();
+					newCart.setUser(user);
+					return cartRepository.save(newCart);
+				});
+				
 		}
 	@Transactional
 	public Cart addToCart(String username, Long productId, int quantity)
 	{
-		Cart cart = getOrCreateCart(username);
 		if(quantity <minQuantity)
 		{
 			throw new InvalidQuantityException("Quantity must be at least " + minQuantity);
 		}
+		Cart cart = getOrCreateCart(username);
+
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new ProductNotFoundException("Product not found"));
 		
@@ -108,41 +104,33 @@ public class CartService
 	@Transactional
 	public Cart updateCartItem(String username, Long productId, int quantity)
 	{
+		if(quantity < minQuantity)
+		{
+			throw new InvalidQuantityException("Quantity must be at least " + minQuantity);
+		}
 		Cart cart = getCart(username);
 		
-		if(cart.getItems() == null ||cart.getItems().isEmpty())
+		if(cart.getItems().isEmpty())
 		{
 			throw new CartNotFoundException("cart is Empty");
 		}
-
-		
-		Optional<CartItem> existingItem = cart.getItems()
-				.stream()
-				.filter(item -> item.getProduct().getId().equals(productId))
-				.findFirst();
-		if(existingItem.isPresent())
+		CartItem items = cart.getItems().stream()
+				.filter(i -> i.getProduct().getId().equals(productId))
+				.findFirst()
+				.orElseThrow(() -> new CartNotFoundException("Product no found in cart"));
+		Product product =items.getProduct();
+		if(product.getStockQuantity()<quantity)
 		{
-			if(quantity < minQuantity)
-			{
-				throw new InvalidQuantityException("Quantity must be at least " + minQuantity);
-			}
-			CartItem item =existingItem.get();
-			Product product=item.getProduct();
-			if(product.getStockQuantity() < quantity)
-			{
-				throw new InsufficientStockException("Insufficient stock available");
-			}
-				item.setQuantity(quantity);
-				return cartRepository.save(cart);
-			}
-		throw new CartNotFoundException("Product not found in cart");
-		
+			throw new InsufficientStockException("Insufficient stock available");
+		}
+		items.setQuantity(quantity);
+		return cartRepository.save(cart);
 	}
 	@Transactional
 	public Cart removeFromCart(String username,  Long productId)
 	{
 		Cart cart = getCart(username);
-		if(cart.getItems() == null || cart.getItems().isEmpty() )
+		if(cart.getItems().isEmpty() )
 		{
 			throw new CartNotFoundException("Cart is empty");
 		}

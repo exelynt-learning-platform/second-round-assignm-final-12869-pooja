@@ -34,6 +34,10 @@ public class Cart
 	}
 	public List<CartItem> getItems()
 	{
+		if(items == null)
+		{
+			items=new ArrayList<>();
+		}
 		
 		return items;
 	}
