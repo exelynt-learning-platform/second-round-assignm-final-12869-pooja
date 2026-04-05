@@ -54,10 +54,15 @@ public class CartService
 		 if(cartOptional.isPresent())
 		    {
 			 Cart cart = cartOptional.get();
+			 if(cart.getItems() == null)
+			 {
+				 cart.setItems(new ArrayList<>());
+			 }
 		        return cart;   
 		    }
 		Cart newCart = new Cart();
 		newCart.setUser(user);
+		newCart.setItems(new ArrayList<>());
 		return cartRepository.save(newCart);
 		}
 	@Transactional
