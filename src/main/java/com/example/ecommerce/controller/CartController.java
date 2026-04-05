@@ -1,11 +1,16 @@
 package com.example.ecommerce.controller;
 import com.example.ecommerce.entity.Cart;
+
 import com.example.ecommerce.service.CartService;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.constraints.Min;
+
 
 @RestController
 @RequestMapping("/api/cart")
+@Validated
 public class CartController 
 {
 	private final CartService cartService;
@@ -23,7 +28,7 @@ public class CartController
 	public Cart addToCart(
 			Authentication authentication,
 			@RequestParam Long productId,
-			@RequestParam int quantity)
+			@RequestParam @Min(1)int quantity)
 	{
 		String username = authentication.getName();
 		return cartService.addToCart(username, productId, quantity);
@@ -32,7 +37,7 @@ public class CartController
 	public Cart updateCart(
 			Authentication authentication,
 			@RequestParam Long productId,
-			@RequestParam int quantity)
+			@RequestParam @Min(1) int quantity)
 	{
 		String username =authentication.getName();
 		return cartService.updateCartItem(username, productId, quantity);
