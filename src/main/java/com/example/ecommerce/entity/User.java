@@ -38,7 +38,7 @@ public class User
 			this.username=username;
 			this.password=password;
 			this.email=email;
-			this.roles =(roles != null) ? new HashSet<>(roles) : new HashSet<>();
+			this.roles =(roles != null) ? roles : new HashSet<>();
 			
 		}
 		public Long getId()
@@ -76,11 +76,11 @@ public class User
 		}
 		public Set<String> getRoles()
 		{
-			return (roles !=null) ? new HashSet<>(roles) : new  HashSet<>();
+			return roles;
 		}
 		public void setRoles(Set<String> roles)
 		{
-			this.roles=(roles != null) ?  new HashSet<>(roles) : new HashSet<>();
+			this.roles=(roles != null) ? roles : new HashSet<>();
 		}
 }
 
