@@ -1,10 +1,23 @@
 package com.example.ecommerce.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 public class CartItemDTO 
 {
+	@NotNull(message = "Product Id cannot be null")
 	private Long productId;
+	
+	@NotNull(message = "Product name cannot be null")
+	@Size(min=1,max=255, message = "Product name must be between 1 and 255 characters")
 	private String productName;
+	
+	@Min(value = 1, message = "Quantity must be at least 1")
 	private int quantity;
+	
+	@Positive(message = "Price must be positive")
 	private double price;
 	
 	public CartItemDTO()

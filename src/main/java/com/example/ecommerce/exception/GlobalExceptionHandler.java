@@ -1,4 +1,5 @@
 package com.example.ecommerce.exception;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 
 import java.time.LocalDateTime;
@@ -145,6 +146,34 @@ public class GlobalExceptionHandler
 		errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
 		return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(NullPointerException.class)
+	public ResponseEntity<Map<String,Object>>handleNullPointer(NullPointerException ex)
+	{
+		logger.error("Null pointer exception occured", ex);
+		Map<String,Object> error = new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message", "A required value was missing");
+		error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<Map<String,Object>>handleDataIntegrity(DataIntegrityViolationException ex)
+	{
+		logger.error("Data integrity violation",ex);
+		Map<String,Object> error= new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("message","Database constraint violation.");
+		error.put("status", HttpStatus.CONFLICT.value());
+		return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+	}
+	
+	
+	
+	
+	
+	
 	
 
 	@ExceptionHandler(Exception.class)
