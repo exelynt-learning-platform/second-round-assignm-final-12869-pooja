@@ -33,13 +33,7 @@ public class CartService
 		this.minQuantity=minQuantity;
 	}
 	
-	private void ensureCartItemsInitialized(Cart cart)
-	{
-		if(cart.getItems()==null)
-		{
-			cart.setItems(new ArrayList<>());
-		}
-	}
+	
 	@Transactional
 	public Cart getCart(String username)
 	{
@@ -48,7 +42,6 @@ public class CartService
 	Cart cart= cartRepository.findByUser(user)
 				.orElseThrow(() -> new CartNotFoundException("Cart not found for user"));
 	
-		ensureCartItemsInitialized(cart);
 	return cart;
 	}
 	
@@ -61,12 +54,10 @@ public class CartService
 		 if(cartOptional.isPresent())
 		    {
 			 Cart cart = cartOptional.get();
-			 ensureCartItemsInitialized(cart);
 		        return cart;   
 		    }
 		Cart newCart = new Cart();
 		newCart.setUser(user);
-		ensureCartItemsInitialized(newCart);
 		return cartRepository.save(newCart);
 		}
 	@Transactional
@@ -84,7 +75,6 @@ public class CartService
 		{
 			throw new InsufficientStockException("Insufficient stock available");
 		}
-		ensureCartItemsInitialized(cart);
 		Optional<CartItem> existingItem = cart.getItems()
 				.stream()
 				.filter(item -> item.getProduct().getId().equals(productId))
@@ -114,9 +104,8 @@ public class CartService
 	public Cart updateCartItem(String username, Long productId, int quantity)
 	{
 		Cart cart = getCart(username);
-		ensureCartItemsInitialized(cart);
 		
-		if(cart.getItems() == null || cart.getItems().isEmpty())
+		if(cart.getItems().isEmpty())
 		{
 			throw new CartNotFoundException("cart is Empty");
 		}
@@ -141,22 +130,24 @@ public class CartService
 				item.setQuantity(quantity);
 				return cartRepository.save(cart);
 			}
-		
 		throw new CartNotFoundException("Product not found in cart");
+		
 	}
 	@Transactional
 	public Cart removeFromCart(String username,  Long productId)
 	{
 		Cart cart = getCart(username);
-		ensureCartItemsInitialized(cart);
-		if(cart.getItems() == null || cart.getItems().isEmpty() )
+		if(cart.getItems().isEmpty() )
 		{
 			throw new CartNotFoundException("Cart is empty");
 		}
 			
-			
-		cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
-		return cartRepository.save(cart);
+		boolean removed = cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
+				if(!removed)
+				{
+					throw new CartNotFoundException("Product not found in cart");
+				}
+	return cartRepository.save(cart);
 	}
 	@Transactional
 	public Cart viewCart(String username)
