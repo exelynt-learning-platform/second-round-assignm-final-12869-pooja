@@ -18,12 +18,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import com.example.ecommerce.constants.SecurityConstants;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController 
 {
-	private static final String BEARER_PREFIX = "Bearer ";
 	
 	private final UserService userService;
 	private final JwtTokenProvider jwtTokenProvider;
@@ -57,7 +57,7 @@ public class AuthController
 		
 		
 		String token = jwtTokenProvider.generateToken(savedUser.getUsername(), authorities);
-		return ResponseEntity.ok(BEARER_PREFIX+ token);
+		return ResponseEntity.ok(SecurityConstants.BEARER_PREFIX+ token);
 	}
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request)
@@ -68,7 +68,7 @@ public class AuthController
 		
 		String token = jwtTokenProvider.generateToken(authentication.getName(),authentication.getAuthorities());
 		
-		return ResponseEntity.ok(BEARER_PREFIX + token);
+		return ResponseEntity.ok(SecurityConstants.BEARER_PREFIX + token);
 		
 				
 	}
