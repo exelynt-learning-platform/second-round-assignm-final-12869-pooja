@@ -42,7 +42,7 @@ public class CartService
 	Cart cart= cartRepository.findByUser(user)
 				.orElseThrow(() -> new CartNotFoundException("Cart not found for user"));
 	
-	return cart;
+	return getOrCreateCart(username);
 	}
 	
 	@Transactional
