@@ -93,7 +93,7 @@ public class CartService
 				});
 	}
 	@Transactional
-	private Cart addtoCart(String username, Long productId, int quantity)
+	public  Cart addtoCart(String username, Long productId, int quantity)
 	{
 		validateQuantity(quantity);
 		
