@@ -51,11 +51,10 @@ public class AuthController
 		roles.add("ROLE_USER");
 		User savedUser = userService.registerUser(user, roles);
  		
-		Collection<SimpleGrantedAuthority> authorities = savedUser.getRoles()
-				.stream()
-				.map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList());
-				
+		Collection<SimpleGrantedAuthority> authorities =  savedUser.getRoles() != null ? savedUser.getRoles().stream()
+				.map(role -> new SimpleGrantedAuthority(role))
+				.collect(Collectors.toList()):Collections.emptyList();
+		
 		
 		String token = jwtTokenProvider.generateToken(savedUser.getUsername(), authorities);
 		return ResponseEntity.ok(SecurityConstants.BEARER_PREFIX+ token);
