@@ -60,7 +60,7 @@ public class OrderService
 			}
 			product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
 			
-			
+			productRepository.save(product);
 	
 			OrderItem orderItem = new OrderItem();
 			orderItem.setOrder(order);

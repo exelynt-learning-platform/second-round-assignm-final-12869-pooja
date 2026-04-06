@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
-class AuthServiceTest
+class UserServiceTest
 {
 	@Mock
 	private UserRepository userRepository;
