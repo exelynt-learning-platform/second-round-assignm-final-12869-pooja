@@ -1,5 +1,6 @@
 package com.example.ecommerce.security;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,9 +20,8 @@ public class SecurityConfig
 {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	
-	@Value("${app.cors.allowed-origin}")
-	private String allowedOrigin;
-	
+	@Value("${app.cors.allowed-origins}")
+	private String allowedOrigins;
 	
 	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter)	{
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -55,7 +55,14 @@ public class SecurityConfig
 	public CorsConfigurationSource corsConfigurationSource()
 	{
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList(allowedOrigin));
+		
+		List<String> origins= Arrays.asList(allowedOrigins.split(","));
+		
+		if(origins.contains("*"))
+		{
+			throw new IllegalArgumentException("Cannot use '*' with allowCredentials=true");
+		}
+		configuration.setAllowedOrigins(origins);
 		configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization","Cache-Control","Content-Type"));
 		configuration.setAllowCredentials(true);
