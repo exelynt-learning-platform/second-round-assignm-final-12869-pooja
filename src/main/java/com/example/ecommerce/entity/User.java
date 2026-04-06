@@ -76,7 +76,7 @@ public class User
 		}
 		public Set<String> getRoles()
 		{
-			return roles;
+			return roles != null ? roles : new HashSet<>();
 		}
 		public void setRoles(Set<String> roles)
 		{

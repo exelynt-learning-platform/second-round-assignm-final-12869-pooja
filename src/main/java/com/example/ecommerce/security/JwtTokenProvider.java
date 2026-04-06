@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import java.util.*;
 import java.util.stream.Collectors;
-@Component
 
+@Component
 public class JwtTokenProvider 
 {
 	@Value("${security.jwt.secret}")
