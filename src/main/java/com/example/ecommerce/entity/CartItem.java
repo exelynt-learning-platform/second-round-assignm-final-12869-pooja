@@ -21,10 +21,11 @@ public class CartItem
 	private Cart cart;
 	public CartItem()
 	{}
+	
+	
 	public Long getId()
 	{
 		return id;
-		
 	}
 	public Product getProduct()
 	{

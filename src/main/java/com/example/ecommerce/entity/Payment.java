@@ -4,6 +4,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.util.*;
 @Entity
+@Table(name = "payments")
 public class Payment 
 {
 	@Id
