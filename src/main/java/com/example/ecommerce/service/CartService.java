@@ -33,31 +33,32 @@ public class CartService
 		this.minQuantity=minQuantity;
 	}
 	
+	private User getUserByUsername(String username)
+	{
+		return userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException("User not found"));
+	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public Cart getCart(String username)
 	{
-		User user=userRepository.findByUsername(username)
-				.orElseThrow(()-> new UserNotFoundException("User not found"));
-	Cart cart= cartRepository.findByUser(user)
+		User user=getUserByUsername(username);
+		return cartRepository.findByUser(user)
 				.orElseThrow(() -> new CartNotFoundException("Cart not found for user"));
-	
-	return cart;
 	}
 	
 	@Transactional
 	public Cart getOrCreateCart(String username)
 	{
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new UserNotFoundException("User not found"));
-		
+		User user = getUserByUsername(username);
 		return cartRepository.findByUser(user)
-				.orElseGet(() -> 
-				{
-					Cart newCart = new Cart();
+				.orElseGet(() -> {
+					Cart newCart= new Cart();
 					newCart.setUser(user);
+					newCart.setItems(new ArrayList<>());
 					return cartRepository.save(newCart);
 				});
+		
 				
 		}
 	@Transactional
@@ -72,23 +73,22 @@ public class CartService
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new ProductNotFoundException("Product not found"));
 		
-		if(product.getStockQuantity()<quantity)
-		{
-			throw new InsufficientStockException("Insufficient stock available");
-		}
 		Optional<CartItem> existingItem = cart.getItems()
 				.stream()
 				.filter(item -> item.getProduct().getId().equals(productId))
 				.findFirst();
+		int totalQuantity = quantity;
 		if(existingItem.isPresent())
 		{
-			CartItem item = existingItem.get();
-			int newQuantity = item.getQuantity() + quantity;
-			if((product.getStockQuantity()) < newQuantity)
-			{
-				throw new InsufficientStockException("Insufficient stock available");
-			}
-				item.setQuantity(newQuantity);
+			totalQuantity += existingItem.get().getQuantity();
+		}
+		if(product.getStockQuantity() < totalQuantity)
+		{
+			throw new InsufficientStockException("Insufficient stock available");
+		}
+		if(existingItem.isPresent())
+		{
+			existingItem.get().setQuantity(totalQuantity);
 		}
 		else
 		{
@@ -96,10 +96,10 @@ public class CartService
 			cartItem.setProduct(product);
 			cartItem.setQuantity(quantity);
 			cartItem.setCart(cart);
-		
-		cart.getItems().add(cartItem);
+			cart.getItems().add(cartItem);
 		}
 		return cartRepository.save(cart);
+		
 	}
 	@Transactional
 	public Cart updateCartItem(String username, Long productId, int quantity)
@@ -117,7 +117,7 @@ public class CartService
 		CartItem items = cart.getItems().stream()
 				.filter(i -> i.getProduct().getId().equals(productId))
 				.findFirst()
-				.orElseThrow(() -> new CartNotFoundException("Product no found in cart"));
+				.orElseThrow(() -> new ProductNotFoundException("Product not found in cart"));
 		Product product =items.getProduct();
 		if(product.getStockQuantity()<quantity)
 		{
@@ -132,17 +132,17 @@ public class CartService
 		Cart cart = getCart(username);
 		if(cart.getItems() == null ||cart.getItems().isEmpty() )
 		{
-			throw new CartNotFoundException("Cart is empty");
+			throw new CartNotFoundException("Cart is Empty");
 		}
 			
 		boolean removed = cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
 				if(!removed)
 				{
-					throw new CartNotFoundException("Product not found in cart");
+					throw new ProductNotFoundException("Product not found in cart");
 				}
 	return cartRepository.save(cart);
 	}
-	@Transactional
+	@Transactional(readOnly = true)
 	public Cart viewCart(String username)
 	{
 		return getCart(username);
