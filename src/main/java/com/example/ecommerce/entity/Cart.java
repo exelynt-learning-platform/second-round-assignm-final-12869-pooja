@@ -18,6 +18,7 @@ public class Cart
 	private List<CartItem> items = new ArrayList<>();
 	public Cart()
 	{
+		this.items=new ArrayList<>();
 	}
 	public Long getId()
 	{
