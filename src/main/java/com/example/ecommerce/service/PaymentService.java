@@ -10,7 +10,6 @@ import com.example.ecommerce.entity.PaymentStatus;
 import com.example.ecommerce.exception.OrderNotFoundException;
 import com.example.ecommerce.exception.StripeException;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +45,7 @@ public class PaymentService
 			STRIPE_STATUS_REQUIRES_CONFIRMATION,
 			STRIPE_STATUS_REQUIRES_ACTION);
 			
-	private static final Set<String> ALLOWED_PAYMENT_METHODS = Set.of(
-			"card", "ideal", "sepa_debit", "sofort");
+	
 			
 	
 	public PaymentService(PaymentRepository paymentRepository, 
@@ -58,28 +56,11 @@ public class PaymentService
 		this.restTemplate = restTemplate;
 	}
 	
-	@PostConstruct
-	public void checkStripeKey()
-	{
-		if(stripeSecretKey == null || stripeSecretKey.isBlank())
-		{
-			throw new IllegalStateException("Stripe secret key is not configured! Set STRIPE_SECRET_KEY enviroment variable.");
-		}
-	}
-	
-	
 	@Transactional
 	public Payment makePayment(Long orderId,String method)
 	{
 		Order order = orderRepository.findById(orderId)
 				.orElseThrow(() -> new OrderNotFoundException("Order not found"));
-		
-		
-		if(!ALLOWED_PAYMENT_METHODS.contains(method))
-		{
-			throw new IllegalArgumentException ("Invalid payment method: " + method);
-		}
-		
 		
 		MultiValueMap<String,String> body = new LinkedMultiValueMap<>();
 		body.add("amount", String.valueOf(Math.round(order.getTotalAmount()*100)));
