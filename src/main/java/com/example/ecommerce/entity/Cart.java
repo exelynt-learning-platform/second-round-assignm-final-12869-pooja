@@ -18,7 +18,6 @@ public class Cart
 	private List<CartItem> items = new ArrayList<>();
 	public Cart()
 	{
-		this.items=new ArrayList<>();
 	}
 	public Long getId()
 	{
@@ -34,10 +33,6 @@ public class Cart
 	}
 	public List<CartItem> getItems()
 	{
-		if(items == null)
-		{
-			items=new ArrayList<>();
-		}
 		
 		return items;
 	}
