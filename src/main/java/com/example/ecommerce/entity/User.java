@@ -80,7 +80,7 @@ public class User
 		}
 		public void setRoles(Set<String> roles)
 		{
-			this.roles=(roles != null) ? roles : new HashSet<>();
+			this.roles = roles != null ? roles : new HashSet<>();
 		}
 }
 
