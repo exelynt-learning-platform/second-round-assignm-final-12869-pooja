@@ -57,15 +57,12 @@ public class SecurityConfig
 		CorsConfiguration configuration = new CorsConfiguration();
 		
 		List<String> origins= Arrays.asList(allowedOrigins.split(","));
-		origins = origins.stream().map(String::trim).toList();
 		
-		if (origins.contains("*")) {
-	        throw new IllegalArgumentException(
-	            "CORS misconfiguration: '*' is not allowed when allowCredentials=true. " +
-	            "Please specify explicit origins in application.properties"
-	        );
-	    }
-
+		
+		if(origins.contains("*"))
+		{
+			throw new IllegalArgumentException("Cannot use '*' with allowCredentials=true");
+		}
 		configuration.setAllowedOrigins(origins);
 		configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization","Cache-Control","Content-Type"));
