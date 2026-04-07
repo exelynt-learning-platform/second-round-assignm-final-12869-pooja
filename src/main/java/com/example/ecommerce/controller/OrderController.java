@@ -37,7 +37,7 @@ public class OrderController
 	{
 		String username = authentication.getName();
 		Order order=orderService.getOrderById(id);
-		if(order == null)
+		if(order == null || order.getUser() == null)
 		{
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Order not found");
 		}
